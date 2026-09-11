@@ -1,0 +1,545 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+:root{
+  --color-background-primary:#ffffff;
+  --color-background-secondary:#f4f1ea;
+  --color-text-primary:#1a1a1a;
+  --color-text-secondary:#6b6b5f;
+  --color-border-primary:#d8d5cb;
+  --color-border-secondary:#c9c6ba;
+  --color-border-tertiary:#e3e0d6;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f4f1ea;padding:1.5rem;display:flex;justify-content:center}
+.card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg,12px);overflow:hidden;max-width:640px;width:100%}
+.header{background:#1a1a1a;padding:1.25rem 1.5rem}
+.header h1{color:#f5f0e8;font-size:20px;font-weight:500}
+.header p{color:#9e9e8a;font-size:13px;margin-top:2px}
+.style-row{display:grid;grid-template-columns:1fr 1fr;gap:0}
+.style-btn{padding:0.75rem 1rem;border:none;background:var(--color-background-secondary);color:var(--color-text-secondary);font-size:13px;font-weight:500;cursor:pointer;border-bottom:0.5px solid var(--color-border-tertiary);transition:all .15s}
+.style-btn:first-child{border-right:0.5px solid var(--color-border-tertiary)}
+.style-btn.active{background:#1a1a1a;color:#f5f0e8}
+.flour-row{padding:0.75rem 1.5rem;border-bottom:0.5px solid var(--color-border-tertiary);background:var(--color-background-secondary);display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap}
+.flour-row label{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;color:var(--color-text-secondary);white-space:nowrap}
+.flour-btns{display:flex;gap:6px;flex-wrap:wrap}
+.fbtn{font-size:12px;padding:4px 12px;border-radius:20px;border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-secondary);cursor:pointer;transition:all .15s}
+.fbtn.active{background:#1a1a1a;color:#f5f0e8;border-color:#1a1a1a}
+.controls{padding:1rem 1.5rem;border-bottom:0.5px solid var(--color-border-tertiary);background:var(--color-background-secondary);display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem}
+.ctrl-group label{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;color:var(--color-text-secondary);display:block;margin-bottom:5px}
+.ctrl-row{display:flex;align-items:center;gap:8px}
+.ctrl-row input[type=range]{flex:1;min-width:0;accent-color:#1a1a1a}
+.ctrl-val{font-size:15px;font-weight:500;color:var(--color-text-primary);min-width:2ch;text-align:right}
+.ctrl-unit{font-size:11px;color:var(--color-text-secondary)}
+.ferment-row{padding:0.75rem 1.5rem;border-bottom:0.5px solid var(--color-border-tertiary);background:var(--color-background-secondary);display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap}
+.ferment-row label{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;color:var(--color-text-secondary);white-space:nowrap}
+.yeast-note{margin-left:auto;font-size:11px;color:var(--color-text-secondary);font-style:italic}
+.total-bar{padding:0.75rem 1.5rem;background:var(--color-background-secondary);border-bottom:0.5px solid var(--color-border-tertiary);display:flex;gap:1.25rem;align-items:baseline;flex-wrap:wrap}
+.total-bar .label{font-size:11px;color:var(--color-text-secondary)}
+.total-bar .big{font-size:18px;font-weight:500;color:var(--color-text-primary)}
+.total-bar .sep{color:var(--color-border-secondary);font-size:14px;align-self:center}
+.tabs{display:flex;border-bottom:0.5px solid var(--color-border-tertiary)}
+.tab{flex:1;padding:0.6rem;font-size:12px;font-weight:500;text-align:center;cursor:pointer;background:var(--color-background-secondary);color:var(--color-text-secondary);border:none;border-right:0.5px solid var(--color-border-tertiary);transition:all .15s}
+.tab:last-child{border-right:none}
+.tab.active{background:var(--color-background-primary);color:var(--color-text-primary)}
+.tab-content{display:none;padding:1.25rem 1.5rem}
+.tab-content.active{display:block}
+.recipe-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.stage{border:0.5px solid var(--color-border-tertiary);border-radius:8px;padding:0.875rem 1rem}
+.stage.full{grid-column:1/-1}
+.badge{font-size:10px;font-weight:500;padding:2px 8px;border-radius:4px;display:inline-block;margin-bottom:0.75rem}
+.badge-amber{background:#FAEEDA;color:#633806}
+.badge-teal{background:#E1F5EE;color:#085041}
+.badge-blue{background:#E6F1FB;color:#0C447C}
+.badge-red{background:#FAEAEA;color:#7C1D1D}
+.badge-grey{background:#F0F0F0;color:#444}
+.section-title{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;color:var(--color-text-secondary);margin-bottom:0.5rem}
+.row{display:flex;justify-content:space-between;align-items:baseline;padding:5px 0;border-bottom:0.5px solid var(--color-border-tertiary)}
+.row:last-child{border-bottom:none}
+.row .name{font-size:13px;color:var(--color-text-secondary)}
+.row .amount{font-size:13px;font-weight:500;color:var(--color-text-primary)}
+.timing{display:flex;gap:6px;margin-top:0.75rem;padding-top:0.75rem;border-top:0.5px solid var(--color-border-tertiary)}
+.timing-item{flex:1;text-align:center;background:var(--color-background-secondary);border-radius:6px;padding:5px 4px}
+.timing-item .t-val{font-size:12px;font-weight:500;color:var(--color-text-primary);display:block}
+.timing-item .t-label{font-size:10px;color:var(--color-text-secondary)}
+.steps-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:0.5rem}
+.step{background:var(--color-background-secondary);border-radius:6px;padding:7px 6px;text-align:center}
+.step .n{font-size:10px;color:var(--color-text-secondary);margin-bottom:2px}
+.step .v{font-size:12px;font-weight:500;color:var(--color-text-primary)}
+.note{grid-column:1/-1;font-size:11px;color:var(--color-text-secondary);padding-top:0.75rem;border-top:0.5px solid var(--color-border-tertiary);line-height:1.6}
+.diff-tag{font-size:10px;background:#FFF3CD;color:#7A4F00;padding:1px 5px;border-radius:3px;margin-left:4px}
+.tl-controls{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
+.tl-ctrl label{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;color:var(--color-text-secondary);display:block;margin-bottom:5px}
+.tl-ctrl select,.tl-ctrl input{width:100%;padding:6px 10px;border:0.5px solid var(--color-border-secondary);border-radius:6px;font-size:13px;background:var(--color-background-primary);color:var(--color-text-primary)}
+.day-block{margin-bottom:1.25rem}
+.day-label{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.1em;color:var(--color-text-secondary);margin-bottom:0.5rem;padding-bottom:0.25rem;border-bottom:0.5px solid var(--color-border-tertiary)}
+.events{display:flex;flex-direction:column;gap:6px}
+.event{display:flex;align-items:flex-start;gap:12px;padding:8px 12px;border-radius:8px;border:0.5px solid var(--color-border-tertiary)}
+.event.amber{background:#FAEEDA;border-color:#EF9F27}
+.event.teal{background:#E1F5EE;border-color:#5DCAA5}
+.event.blue{background:#E6F1FB;border-color:#85B7EB}
+.event.fire{background:#FAECE7;border-color:#F0997B}
+.event.red{background:#FAEAEA;border-color:#E08080}
+.event-time{font-size:13px;font-weight:500;min-width:64px;padding-top:1px}
+.event-title{font-size:14px;font-weight:500}
+.event-sub{font-size:12px;margin-top:1px;opacity:0.8}
+.event.amber .event-time,.event.amber .event-title{color:#633806}
+.event.amber .event-sub{color:#854F0B}
+.event.teal .event-time,.event.teal .event-title{color:#085041}
+.event.teal .event-sub{color:#0F6E56}
+.event.blue .event-time,.event.blue .event-title{color:#0C447C}
+.event.blue .event-sub{color:#185FA5}
+.event.fire .event-time,.event.fire .event-title{color:#712B13}
+.event.fire .event-sub{color:#993C1D}
+.event.red .event-time,.event.red .event-title{color:#7C1D1D}
+.event.red .event-sub{color:#9B3030}
+.proof-bar{padding:6px 12px;border-radius:8px;background:var(--color-background-secondary);border:0.5px dashed var(--color-border-secondary);font-size:12px;color:var(--color-text-secondary);display:flex;justify-content:space-between}
+.proof-bar .hours{font-size:13px;font-weight:500;color:var(--color-text-primary)}
+@media(prefers-color-scheme:dark){
+.style-btn.active,.fbtn.active{background:#f5f0e8;color:#1a1a1a;border-color:#f5f0e8}
+.badge-amber{background:#412402;color:#FAC775}
+.badge-teal{background:#04342C;color:#5DCAA5}
+.badge-blue{background:#042C53;color:#85B7EB}
+.badge-red{background:#4A0D0D;color:#F4AAAA}
+.badge-grey{background:#2A2A2A;color:#CCC}
+.diff-tag{background:#4A3600;color:#FFD97D}
+}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="header">
+    <h1>Pizza dough scaler</h1>
+    <p>Neapolitan · New York · live quantities · timeline</p>
+  </div>
+
+  <div class="style-row">
+    <button class="style-btn active" onclick="setStyle('neo',this)">🍕 Neapolitan</button>
+    <button class="style-btn" onclick="setStyle('ny',this)">🗽 New York</button>
+  </div>
+
+  <div class="flour-row">
+    <label>Flour</label>
+    <div class="flour-btns" id="flour-btns"></div>
+  </div>
+
+  <div class="controls">
+    <div class="ctrl-group">
+      <label>Dough balls</label>
+      <div class="ctrl-row">
+        <input type="range" id="balls" min="1" max="30" step="1" value="3" oninput="update()">
+        <span class="ctrl-val" id="balls-val">3</span>
+      </div>
+    </div>
+    <div class="ctrl-group">
+      <label>Ball weight</label>
+      <div class="ctrl-row">
+        <input type="range" id="weight" min="200" max="320" step="5" value="270" oninput="update()">
+        <span class="ctrl-val" id="weight-val">270</span><span class="ctrl-unit">g</span>
+      </div>
+    </div>
+    <div class="ctrl-group">
+      <label>Hydration</label>
+      <div class="ctrl-row">
+        <input type="range" id="hydration" min="55" max="75" step="1" value="63" oninput="update()">
+        <span class="ctrl-val" id="hydration-val">63</span><span class="ctrl-unit">%</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="ferment-row">
+    <label id="ferment-label-title">Poolish ferment</label>
+    <div class="flour-btns" id="ferment-btns">
+      <button class="fbtn" onclick="setFerment(18,this)">18 hr</button>
+      <button class="fbtn" onclick="setFerment(24,this)">24 hr</button>
+      <button class="fbtn" onclick="setFerment(36,this)">36 hr</button>
+      <button class="fbtn" onclick="setFerment(48,this)">48 hr</button>
+      <button class="fbtn active" onclick="setFerment(72,this)">72 hr</button>
+    </div>
+    <span class="yeast-note" id="yeast-note"></span>
+  </div>
+
+  <div class="total-bar">
+    <div><div class="label">Total dough</div><div class="big" id="total-dough">—</div></div>
+    <div class="sep">·</div>
+    <div><div class="label">Total flour</div><div class="big" id="total-flour">—</div></div>
+    <div class="sep">·</div>
+    <div><div class="label">Total water</div><div class="big" id="total-water">—</div></div>
+    <div class="sep">·</div>
+    <div><div class="label">Pizza size</div><div class="big" id="pizza-size">—</div></div>
+    <div class="sep">·</div>
+    <div><div class="label">Bake</div><div class="big" id="bake-info">—</div></div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="setTab('recipe',this)">Recipe</button>
+    <button class="tab" onclick="setTab('timeline',this)">Timeline</button>
+  </div>
+
+  <div class="tab-content active" id="tab-recipe">
+    <div class="recipe-grid" id="recipe-grid"></div>
+  </div>
+
+  <div class="tab-content" id="tab-timeline">
+    <div class="tl-controls">
+      <div class="tl-ctrl">
+        <label>Cook day</label>
+        <select id="cook-day" onchange="update()">
+          <option value="0">Sunday</option>
+          <option value="1">Monday</option>
+          <option value="2">Tuesday</option>
+          <option value="3">Wednesday</option>
+          <option value="4">Thursday</option>
+          <option value="5">Friday</option>
+          <option value="6" selected>Saturday</option>
+        </select>
+      </div>
+      <div class="tl-ctrl">
+        <label>Cook time</label>
+        <input type="time" id="cook-time" value="18:00" onchange="update()">
+      </div>
+    </div>
+    <div id="timeline-content"></div>
+  </div>
+</div>
+
+<script>
+const DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+
+const FLOURS = {
+  neo:[
+    {id:'pizzeria',  label:'Caputo Pizzeria', hydMin:58, hydMax:70, hydDef:63},
+    {id:'nuvola',    label:'Caputo Nuvola',   hydMin:65, hydMax:75, hydDef:67},
+    {id:'saccorosso',label:'Caputo Saccorosso',hydMin:60,hydMax:72,hydDef:63}
+  ],
+  ny:[
+    {id:'manitoba',label:'Caputo Manitoba',    hydMin:55,hydMax:65,hydDef:58},
+    {id:'strong',  label:'Strong bread flour', hydMin:55,hydMax:63,hydDef:58}
+  ]
+};
+
+// Yeast rates based on 0.15g per 175g poolish flour at 72hr (original recipe)
+// = 0.0857% of poolish flour at 72hr, scaled proportionally up for shorter ferments
+const YEAST_RATES = {
+  18:{rate:0.00600, note:'Standard overnight'},
+  24:{rate:0.00400, note:'Full day cold ferment'},
+  36:{rate:0.00220, note:'Extended cold ferment'},
+  48:{rate:0.00150, note:'Long cold ferment'},
+  72:{rate:0.00086, note:'Very long — minimal yeast'}
+};
+// Note: 0.00086 × 175 = 0.15g ✓
+
+let style = 'neo';
+let flour = 'pizzeria';
+let fermentHours = 72;
+
+function setStyle(s,btn){
+  style=s; flour=FLOURS[s][0].id;
+  document.querySelectorAll('.style-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('ferment-label-title').textContent = s==='neo'?'Poolish ferment':'Cold ferment';
+  renderFlourBtns();
+  applyFlourConstraints();
+  update();
+}
+
+function setFlour(f){
+  flour=f;
+  applyFlourConstraints();
+  update();
+}
+
+function applyFlourConstraints(){
+  const fd=FLOURS[style].find(f2=>f2.id===flour);
+  const h=document.getElementById('hydration');
+  h.min=fd.hydMin; h.max=fd.hydMax;
+  if(parseInt(h.value)<fd.hydMin||parseInt(h.value)>fd.hydMax) h.value=fd.hydDef;
+}
+
+function renderFlourBtns(){
+  const c=document.getElementById('flour-btns');
+  c.innerHTML='';
+  FLOURS[style].forEach(f=>{
+    const b=document.createElement('button');
+    b.className='fbtn'+(f.id===flour?' active':'');
+    b.textContent=f.label;
+    b.onclick=()=>{setFlour(f.id);document.querySelectorAll('#flour-btns .fbtn').forEach(x=>x.classList.remove('active'));b.classList.add('active');};
+    c.appendChild(b);
+  });
+}
+
+function setFerment(hrs,btn){
+  fermentHours=hrs;
+  document.querySelectorAll('#ferment-btns .fbtn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  update();
+}
+
+function setTab(t,btn){
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-'+t).classList.add('active');
+}
+
+function fmt(v){
+  if(v<1)  return v.toFixed(2)+'g';
+  if(v<10) return v.toFixed(1)+'g';
+  return Math.round(v)+'g';
+}
+
+function pizzaSize(g){
+  if(g<=220) return '10″';
+  if(g<=250) return '11″';
+  if(g<=290) return '12″';
+  if(g<=310) return '13″';
+  return '14″';
+}
+
+function calcDough(){
+  const balls    =parseInt(document.getElementById('balls').value);
+  const weight   =parseInt(document.getElementById('weight').value);
+  const hydration=parseInt(document.getElementById('hydration').value)/100;
+  const totalDough=balls*weight;
+
+  if(style==='neo'){
+    const totalFlour  =totalDough/(1+hydration+0.024);
+    const totalWater  =totalFlour*hydration;
+    const salt        =totalFlour*0.024;
+    const poolishFlour=totalFlour*0.5;
+    const poolishWater=poolishFlour;
+    const finalFlour  =totalFlour-poolishFlour;
+    const finalWater  =totalWater-poolishWater;
+    const yeast       =poolishFlour*YEAST_RATES[fermentHours].rate;
+    return{totalDough,totalFlour,totalWater,salt,poolishFlour,poolishWater,finalFlour,finalWater,yeast};
+  } else {
+    const totalFlour=totalDough/(1+hydration+0.02+0.02+0.01);
+    const totalWater=totalFlour*hydration;
+    const salt =totalFlour*0.02;
+    const oil  =totalFlour*0.02;
+    const sugar=totalFlour*0.01;
+    const yeast=totalFlour*YEAST_RATES[fermentHours].rate;
+    return{totalDough,totalFlour,totalWater,salt,oil,sugar,yeast};
+  }
+}
+
+function renderRecipe(d){
+  const grid=document.getElementById('recipe-grid');
+  const fLabel=fermentHours+' hr';
+  const sz=pizzaSize(parseInt(document.getElementById('weight').value));
+  const flourName=FLOURS[style].find(f=>f.id===flour)?.label;
+
+  if(style==='neo'){
+    grid.innerHTML=`
+      <div class="stage">
+        <span class="badge badge-amber">Day 1 — poolish</span>
+        <div class="section-title">Mix & ferment</div>
+        <div class="row"><span class="name">00 flour (${flourName})</span><span class="amount">${fmt(d.poolishFlour)}</span></div>
+        <div class="row"><span class="name">Filtered water</span><span class="amount">${fmt(d.poolishWater)}</span></div>
+        <div class="row"><span class="name">Instant dry yeast</span><span class="amount">${fmt(d.yeast)}</span></div>
+        <div class="timing">
+          <div class="timing-item"><span class="t-val">2 hr</span><span class="t-label">room temp</span></div>
+          <div class="timing-item"><span class="t-val">${fLabel}</span><span class="t-label">fridge</span></div>
+        </div>
+      </div>
+      <div class="stage">
+        <span class="badge badge-teal">Day 2 — final dough</span>
+        <div class="section-title">Mix, fold & ball</div>
+        <div class="row"><span class="name">00 flour (${flourName})</span><span class="amount">${fmt(d.finalFlour)}</span></div>
+        <div class="row"><span class="name">Water (into poolish first)</span><span class="amount">${fmt(d.finalWater)}</span></div>
+        <div class="row"><span class="name">Salt</span><span class="amount">${fmt(d.salt)}</span></div>
+        <div class="timing">
+          <div class="timing-item"><span class="t-val">5 min</span><span class="t-label">mixer</span></div>
+          <div class="timing-item"><span class="t-val">30 min</span><span class="t-label">bench rest</span></div>
+          <div class="timing-item"><span class="t-val">${fLabel}</span><span class="t-label">cold proof</span></div>
+        </div>
+      </div>
+      <div class="stage full">
+        <span class="badge badge-blue">Bake day</span>
+        <div class="steps-grid">
+          <div class="step"><div class="n">Rest out</div><div class="v">2–3 hr</div></div>
+          <div class="step"><div class="n">Dusting</div><div class="v">50/50 semolina+00</div></div>
+          <div class="step"><div class="n">Stretch</div><div class="v">to ${sz}</div></div>
+          <div class="step"><div class="n">Stone temp</div><div class="v">420–450°C</div></div>
+          <div class="step"><div class="n">Bake</div><div class="v">~75 sec</div></div>
+          <div class="step"><div class="n">Basil & oil</div><div class="v">after bake</div></div>
+        </div>
+      </div>
+      <div class="note">Poolish is 50% of total flour at 100% hydration. Yeast calibrated to 0.15g per 175g poolish flour at 72 hr, scaled proportionally for other ferment times. Salt at 2.4% of total flour. No honey — long ferment generates natural sugars. Add day 2 water into poolish first, loosen with hands, then pour into dry flour.</div>`;
+  } else {
+    grid.innerHTML=`
+      <div class="stage full">
+        <span class="badge badge-red">Straight dough — all in one mix</span>
+        <div class="section-title">${flourName}</div>
+        <div class="row"><span class="name">Bread flour</span><span class="amount">${fmt(d.totalFlour)}</span></div>
+        <div class="row"><span class="name">Water (lukewarm)</span><span class="amount">${fmt(d.totalWater)}</span></div>
+        <div class="row"><span class="name">Instant dry yeast</span><span class="amount">${fmt(d.yeast)}</span></div>
+        <div class="row"><span class="name">Fine sea salt</span><span class="amount">${fmt(d.salt)}</span></div>
+        <div class="row"><span class="name">Olive oil <span class="diff-tag">NY</span></span><span class="amount">${fmt(d.oil)}</span></div>
+        <div class="row"><span class="name">Sugar <span class="diff-tag">NY</span></span><span class="amount">${fmt(d.sugar)}</span></div>
+        <div class="timing">
+          <div class="timing-item"><span class="t-val">8 min</span><span class="t-label">mixer</span></div>
+          <div class="timing-item"><span class="t-val">30 min</span><span class="t-label">bench rest</span></div>
+          <div class="timing-item"><span class="t-val">${fLabel}</span><span class="t-label">cold proof</span></div>
+        </div>
+      </div>
+      <div class="stage">
+        <span class="badge badge-teal">NY cooked sauce</span>
+        <div class="section-title">Makes enough for all balls</div>
+        <div class="row"><span class="name">San Marzano tin</span><span class="amount">1 tin</span></div>
+        <div class="row"><span class="name">Olive oil</span><span class="amount">2 tbsp</span></div>
+        <div class="row"><span class="name">Garlic cloves, crushed</span><span class="amount">2</span></div>
+        <div class="row"><span class="name">Dried oregano</span><span class="amount">1 tsp</span></div>
+        <div class="row"><span class="name">Salt & pinch sugar</span><span class="amount">to taste</span></div>
+        <div class="timing">
+          <div class="timing-item"><span class="t-val">20 min</span><span class="t-label">simmer</span></div>
+          <div class="timing-item"><span class="t-val">cool</span><span class="t-label">before use</span></div>
+        </div>
+      </div>
+      <div class="stage">
+        <span class="badge badge-blue">Bake day</span>
+        <div class="steps-grid" style="grid-template-columns:1fr 1fr">
+          <div class="step"><div class="n">Rest out</div><div class="v">2 hr</div></div>
+          <div class="step"><div class="n">Stretch thin</div><div class="v">to ${sz}</div></div>
+          <div class="step"><div class="n">Stone temp</div><div class="v">280–320°C</div></div>
+          <div class="step"><div class="n">Bake</div><div class="v">4–6 min</div></div>
+        </div>
+      </div>
+      <div class="note">No poolish for NY style — straight dough, all in one mix. Oil at 2%, sugar at 1% of flour. Use low moisture mozzarella not fresh. Rotate pizza halfway through bake.</div>`;
+  }
+}
+
+function addDays(date,days){const d=new Date(date);d.setDate(d.getDate()+days);return d;}
+function dayName(d){return DAYS[d.getDay()];}
+function fmt12(h,m){const ap=h>=12?'pm':'am';const hh=h%12||12;return`${hh}:${String(m).padStart(2,'0')}${ap}`;}
+
+function renderTimeline(){
+  const cookDay =parseInt(document.getElementById('cook-day').value);
+  const cookTime=document.getElementById('cook-time').value;
+  const [ch,cm] =cookTime.split(':').map(Number);
+  const today=new Date();
+  let daysUntil=(cookDay-today.getDay()+7)%7||7;
+  const cookDate=addDays(today,daysUntil);
+  const pullHour=ch-3;
+  const ovenHour=ch-1;
+  let html='';
+
+  if(style==='neo'){
+    const ballDate   =addDays(cookDate,-1);
+    const poolishDaysBack=Math.round(fermentHours/24);
+    const poolishDate=addDays(ballDate,-poolishDaysBack);
+    const ballProofHrs=Math.round((cookDate-ballDate)/3600000)-3;
+
+    html+=`
+    <div class="day-block">
+      <div class="day-label">${dayName(poolishDate)} — Day 1</div>
+      <div class="events">
+        <div class="event amber">
+          <div class="event-time">Evening</div>
+          <div class="event-body"><div class="event-title">Mix the poolish</div><div class="event-sub">Flour · water · yeast — stir until shaggy, cover tightly</div></div>
+        </div>
+        <div class="proof-bar"><span>2 hrs room temp then into fridge</span><span class="hours">${fermentHours} hr cold ferment</span></div>
+      </div>
+    </div>
+    <div class="day-block">
+      <div class="day-label">${dayName(ballDate)} — Day 2</div>
+      <div class="events">
+        <div class="event teal">
+          <div class="event-time">Evening</div>
+          <div class="event-body"><div class="event-title">Pull poolish — 1 hr room temp</div><div class="event-sub">Should be bubbly and domed</div></div>
+        </div>
+        <div class="event teal">
+          <div class="event-time">+1 hr</div>
+          <div class="event-body"><div class="event-title">Mix final dough</div><div class="event-sub">Add water to poolish first · loosen · pour into flour · 5 min mixer</div></div>
+        </div>
+        <div class="event teal">
+          <div class="event-time">+10 min</div>
+          <div class="event-body"><div class="event-title">Fold & bench rest</div><div class="event-sub">10–15 folds · shape into ball · cover · 30 min rest</div></div>
+        </div>
+        <div class="event teal">
+          <div class="event-time">+40 min</div>
+          <div class="event-body"><div class="event-title">Divide & ball up</div><div class="event-sub">Scale into ${document.getElementById('weight').value}g pieces · tight ball technique · into fridge</div></div>
+        </div>
+        <div class="proof-bar"><span>Ball cold proof begins</span><span class="hours">~${ballProofHrs} hr cold proof</span></div>
+      </div>
+    </div>
+    <div class="day-block">
+      <div class="day-label">${dayName(cookDate)} — Bake day</div>
+      <div class="events">
+        <div class="event blue">
+          <div class="event-time">${fmt12(pullHour,cm)}</div>
+          <div class="event-body"><div class="event-title">Pull balls from fridge</div><div class="event-sub">3 hours room temp rest — don't rush · if hot day check at 2.5 hrs</div></div>
+        </div>
+        <div class="event fire">
+          <div class="event-time">${fmt12(ovenHour,cm)}</div>
+          <div class="event-body"><div class="event-title">Light the Gozney</div><div class="event-sub">Target stone temp 420–450°C · allow 45–60 min to heat through</div></div>
+        </div>
+        <div class="event fire">
+          <div class="event-time">${fmt12(ch,cm)}</div>
+          <div class="event-body"><div class="event-title">Cook</div><div class="event-sub">50/50 semolina+00 on peel · stretch to ${pizzaSize(parseInt(document.getElementById('weight').value))} · ~75 sec · basil & oil after</div></div>
+        </div>
+      </div>
+    </div>`;
+  } else {
+    const mixDaysBack=Math.round(fermentHours/24);
+    const mixDate=addDays(cookDate,-mixDaysBack);
+    const restHour=ch-2;
+
+    html+=`
+    <div class="day-block">
+      <div class="day-label">${dayName(mixDate)} — Mix day</div>
+      <div class="events">
+        <div class="event red">
+          <div class="event-time">Evening</div>
+          <div class="event-body"><div class="event-title">Mix straight dough</div><div class="event-sub">All ingredients in one go · 8 min mixer · 30 min bench rest · ball up · into fridge</div></div>
+        </div>
+        <div class="proof-bar"><span>Cold proof begins</span><span class="hours">${fermentHours} hr in fridge</span></div>
+      </div>
+    </div>
+    <div class="day-block">
+      <div class="day-label">${dayName(cookDate)} — Bake day</div>
+      <div class="events">
+        <div class="event blue">
+          <div class="event-time">${fmt12(restHour,cm)}</div>
+          <div class="event-body"><div class="event-title">Pull balls from fridge</div><div class="event-sub">2 hours room temp rest before stretching</div></div>
+        </div>
+        <div class="event fire">
+          <div class="event-time">${fmt12(ovenHour,cm)}</div>
+          <div class="event-body"><div class="event-title">Light the Gozney</div><div class="event-sub">Target stone temp 280–320°C · low flame · allow 45–60 min</div></div>
+        </div>
+        <div class="event fire">
+          <div class="event-time">${fmt12(ch,cm)}</div>
+          <div class="event-body"><div class="event-title">Cook</div><div class="event-sub">Stretch thin to ${pizzaSize(parseInt(document.getElementById('weight').value))} · 4–6 min · rotate halfway · low moisture mozz should be golden</div></div>
+        </div>
+      </div>
+    </div>`;
+  }
+  document.getElementById('timeline-content').innerHTML=html;
+}
+
+function update(){
+  const balls    =parseInt(document.getElementById('balls').value);
+  const weight   =parseInt(document.getElementById('weight').value);
+  const hydration=parseInt(document.getElementById('hydration').value);
+  document.getElementById('balls-val').textContent    =balls;
+  document.getElementById('weight-val').textContent   =weight;
+  document.getElementById('hydration-val').textContent=hydration;
+  document.getElementById('yeast-note').textContent   =YEAST_RATES[fermentHours].note;
+  const d=calcDough();
+  document.getElementById('total-dough').textContent=Math.round(d.totalDough)+'g';
+  document.getElementById('total-flour').textContent=Math.round(d.totalFlour)+'g';
+  document.getElementById('total-water').textContent=Math.round(d.totalWater)+'g';
+  document.getElementById('pizza-size').textContent =pizzaSize(weight);
+  document.getElementById('bake-info').textContent  =style==='neo'?'~75 sec':'4–6 min';
+  renderRecipe(d);
+  renderTimeline();
+}
+
+renderFlourBtns();
+applyFlourConstraints();
+update();
+</script>
+</body>
+</html>
