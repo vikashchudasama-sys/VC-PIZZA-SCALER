@@ -139,8 +139,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <label>Flour</label>
     <div class="flour-select-wrap">
       <select id="flour-select" onchange="setFlour(this.value)"></select>
-      <button class="info-btn" type="button" onclick="togglePopover(event,'flour-popover')">i</button>
+      <button class="info-btn" type="button" onclick="togglePop(event,'flour-popover')">i</button>
       <div class="popover" id="flour-popover"></div>
+    </div>
+  </div>
+
+  <div class="flour-row" id="tray-row" style="display:none">
+    <label>Tray size</label>
+    <div class="flour-select-wrap">
+      <select id="tray-select" onchange="setTraySize(this.value)"></select>
     </div>
   </div>
 
@@ -150,7 +157,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <input type="range" id="manitoba" min="0" max="30" step="5" value="0" oninput="applyFlourConstraints();update()">
       <span class="ctrl-val" id="manitoba-val">0</span><span class="ctrl-unit">%</span>
     </div>
-    <button class="info-btn" type="button" onclick="togglePopover(event,'manitoba-popover')">i</button>
+    <button class="info-btn" type="button" onclick="togglePop(event,'manitoba-popover')">i</button>
     <div class="popover" id="manitoba-popover"></div>
   </div>
 
@@ -180,7 +187,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
   <div class="ferment-row">
     <label id="ferment-label-title">Poolish ferment</label>
-    <button class="info-btn" type="button" id="poolish-info-btn" onclick="togglePopover(event,'poolish-popover')">i</button>
+    <button class="info-btn" type="button" id="poolish-info-btn" onclick="togglePop(event,'poolish-popover')">i</button>
     <div class="popover" id="poolish-popover"></div>
     <div class="flour-btns" id="ferment-btns">
       <button class="fbtn" onclick="setFerment(18,this)">18 hr</button>
@@ -272,8 +279,40 @@ const POOLISH_INFO = 'Poolish is a wet pre-ferment \u2014 equal parts flour and 
 const STYLE_CONTROLS = {
   neo:     {ballsLabel:'Dough balls', weightLabel:'Ball weight', ballsMin:1,ballsMax:30,ballsDef:3, weightMin:200,weightMax:320,weightDef:270},
   ny:      {ballsLabel:'Dough balls', weightLabel:'Ball weight', ballsMin:1,ballsMax:30,ballsDef:3, weightMin:200,weightMax:320,weightDef:270},
-  focaccia:{ballsLabel:'Number of trays', weightLabel:'Dough per tray', ballsMin:1,ballsMax:6,ballsDef:1, weightMin:500,weightMax:1400,weightDef:900}
+  focaccia:{ballsLabel:'Number of trays', weightLabel:'Dough per tray', ballsMin:1,ballsMax:6,ballsDef:1, weightMin:400,weightMax:2400,weightDef:900}
 };
+
+const TRAY_SIZES = [
+  {id:'square20',label:'20×20cm square tin',doughRec:550},
+  {id:'rect2333',label:'23×33cm rectangular tray',doughRec:900},
+  {id:'round28', label:'28cm round tin',doughRec:600},
+  {id:'half3346',label:'33×46cm half sheet tray',doughRec:1400},
+  {id:'full4666',label:'46×66cm full sheet tray',doughRec:2200}
+];
+let traySizeId='rect2333';
+
+function renderTraySelect(){
+  const sel=document.getElementById('tray-select');
+  sel.innerHTML='';
+  TRAY_SIZES.forEach(t=>{
+    const o=document.createElement('option');
+    o.value=t.id; o.textContent=t.label;
+    if(t.id===traySizeId) o.selected=true;
+    sel.appendChild(o);
+  });
+}
+
+function setTraySize(id){
+  traySizeId=id;
+  const t=TRAY_SIZES.find(x=>x.id===id);
+  document.getElementById('weight').value=t.doughRec;
+  update();
+}
+
+function trayLabel(){
+  const t=TRAY_SIZES.find(x=>x.id===traySizeId)||TRAY_SIZES[1];
+  return t.label;
+}
 
 // Yeast rates based on 0.15g per 175g poolish flour at 72hr (original recipe)
 // = 0.0857% of poolish flour at 72hr, scaled proportionally up for shorter ferments
@@ -298,7 +337,9 @@ function setStyle(s,btn){
   document.getElementById('ferment-label-title').textContent = fermentLabel;
   document.getElementById('poolish-info-btn').style.display = s==='neo'?'flex':'none';
   document.getElementById('manitoba-row').style.display = s==='neo'?'none':'flex';
+  document.getElementById('tray-row').style.display = s==='focaccia'?'flex':'none';
   document.getElementById('manitoba').value=0;
+  if(s==='focaccia'){ traySizeId='rect2333'; renderTraySelect(); }
 
   const sc=STYLE_CONTROLS[s];
   document.getElementById('balls-label').textContent=sc.ballsLabel;
@@ -345,7 +386,7 @@ function closeAllPopovers(){
   document.querySelectorAll('.popover').forEach(p=>p.classList.remove('open'));
 }
 
-function togglePopover(evt,id){
+function togglePop(evt,id){
   evt.stopPropagation();
   const pop=document.getElementById(id);
   const wasOpen=pop.classList.contains('open');
@@ -402,12 +443,6 @@ function pizzaSize(g){
   return '14″';
 }
 
-function traySize(g){
-  if(g<=700) return '8×8in tray';
-  if(g<=1000) return '9×13in tray';
-  return 'Half sheet tray';
-}
-
 function manitobaPct(){
   if(style==='neo') return 0;
   return parseInt(document.getElementById('manitoba').value)||0;
@@ -462,7 +497,7 @@ function renderRecipe(d){
   const grid=document.getElementById('recipe-grid');
   const fLabel=fermentHours+' hr';
   const weightVal=parseInt(document.getElementById('weight').value);
-  const sz=style==='focaccia'?traySize(weightVal):pizzaSize(weightVal);
+  const sz=style==='focaccia'?trayLabel():pizzaSize(weightVal);
   const flourName=FLOURS[style].find(f=>f.id===flour)?.label;
 
   if(style==='neo'){
@@ -736,7 +771,7 @@ function update(){
   document.getElementById('total-flour').textContent=Math.round(d.totalFlour)+'g';
   document.getElementById('total-water').textContent=Math.round(d.totalWater)+'g';
   document.getElementById('size-label').textContent =style==='focaccia'?'Tray size':'Pizza size';
-  document.getElementById('pizza-size').textContent =style==='focaccia'?traySize(weight):pizzaSize(weight);
+  document.getElementById('pizza-size').textContent =style==='focaccia'?trayLabel():pizzaSize(weight);
   document.getElementById('bake-info').textContent  =style==='neo'?'~75 sec':(style==='ny'?'4–6 min':'20–25 min');
   if(document.getElementById('flour-popover').classList.contains('open')) renderPopoverContent('flour-popover');
   renderRecipe(d);
@@ -744,6 +779,7 @@ function update(){
 }
 
 renderFlourSelect();
+renderTraySelect();
 applyFlourConstraints();
 update();
 </script>
