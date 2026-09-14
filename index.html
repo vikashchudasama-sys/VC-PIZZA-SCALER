@@ -19,9 +19,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .header{background:#1a1a1a;padding:1.25rem 1.5rem}
 .header h1{color:#f5f0e8;font-size:20px;font-weight:500}
 .header p{color:#9e9e8a;font-size:13px;margin-top:2px}
-.style-row{display:grid;grid-template-columns:1fr 1fr;gap:0}
-.style-btn{padding:0.75rem 1rem;border:none;background:var(--color-background-secondary);color:var(--color-text-secondary);font-size:13px;font-weight:500;cursor:pointer;border-bottom:0.5px solid var(--color-border-tertiary);transition:all .15s}
-.style-btn:first-child{border-right:0.5px solid var(--color-border-tertiary)}
+.style-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0}
+.style-btn{padding:0.75rem 1rem;border:none;background:var(--color-background-secondary);color:var(--color-text-secondary);font-size:13px;font-weight:500;cursor:pointer;border-bottom:0.5px solid var(--color-border-tertiary);border-right:0.5px solid var(--color-border-tertiary);transition:all .15s}
+.style-btn:last-child{border-right:none}
 .style-btn.active{background:#1a1a1a;color:#f5f0e8}
 .flour-row{padding:0.75rem 1.5rem;border-bottom:0.5px solid var(--color-border-tertiary);background:var(--color-background-secondary);display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap}
 .flour-row label{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;color:var(--color-text-secondary);white-space:nowrap}
@@ -98,6 +98,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .event.red .event-sub{color:#9B3030}
 .proof-bar{padding:6px 12px;border-radius:8px;background:var(--color-background-secondary);border:0.5px dashed var(--color-border-secondary);font-size:12px;color:var(--color-text-secondary);display:flex;justify-content:space-between}
 .proof-bar .hours{font-size:13px;font-weight:500;color:var(--color-text-primary)}
+.flour-select-wrap{position:relative;display:flex;align-items:center;gap:6px}
+.flour-select-wrap select{font-size:12px;padding:5px 10px;border-radius:20px;border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);max-width:220px}
+.info-btn{width:18px;height:18px;border-radius:50%;border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-secondary);font-size:11px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;flex-shrink:0}
+.info-btn:hover{background:var(--color-background-secondary)}
+.popover{display:none;position:absolute;top:calc(100% + 8px);left:0;z-index:20;width:260px;background:var(--color-background-primary);border:0.5px solid var(--color-border-secondary);border-radius:10px;box-shadow:0 4px 16px rgba(0,0,0,0.12);padding:0.75rem 0.875rem;font-size:12px;color:var(--color-text-secondary);line-height:1.5}
+.popover.open{display:block}
+.popover .p-title{font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:4px}
+.popover .p-stats{display:flex;gap:10px;margin-bottom:6px;font-size:11px}
+.popover .p-stats span b{color:var(--color-text-primary);font-weight:500}
+.ferment-row{position:relative}
+.manitoba-row{padding:0.75rem 1.5rem;border-bottom:0.5px solid var(--color-border-tertiary);background:var(--color-background-secondary);display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;position:relative}
+.manitoba-row label{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;color:var(--color-text-secondary);white-space:nowrap}
+.manitoba-row .ctrl-row{flex:1;max-width:180px}
 @media(prefers-color-scheme:dark){
 .style-btn.active,.fbtn.active{background:#f5f0e8;color:#1a1a1a;border-color:#f5f0e8}
 .badge-amber{background:#412402;color:#FAC775}
@@ -119,23 +132,38 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <div class="style-row">
     <button class="style-btn active" onclick="setStyle('neo',this)">🍕 Neapolitan</button>
     <button class="style-btn" onclick="setStyle('ny',this)">🗽 New York</button>
+    <button class="style-btn" onclick="setStyle('focaccia',this)">🫒 Focaccia</button>
   </div>
 
   <div class="flour-row">
     <label>Flour</label>
-    <div class="flour-btns" id="flour-btns"></div>
+    <div class="flour-select-wrap">
+      <select id="flour-select" onchange="setFlour(this.value)"></select>
+      <button class="info-btn" type="button" onclick="togglePopover(event,'flour-popover')">i</button>
+      <div class="popover" id="flour-popover"></div>
+    </div>
+  </div>
+
+  <div class="manitoba-row" id="manitoba-row" style="display:none">
+    <label>Manitoba blend</label>
+    <div class="ctrl-row">
+      <input type="range" id="manitoba" min="0" max="30" step="5" value="0" oninput="applyFlourConstraints();update()">
+      <span class="ctrl-val" id="manitoba-val">0</span><span class="ctrl-unit">%</span>
+    </div>
+    <button class="info-btn" type="button" onclick="togglePopover(event,'manitoba-popover')">i</button>
+    <div class="popover" id="manitoba-popover"></div>
   </div>
 
   <div class="controls">
     <div class="ctrl-group">
-      <label>Dough balls</label>
+      <label id="balls-label">Dough balls</label>
       <div class="ctrl-row">
         <input type="range" id="balls" min="1" max="30" step="1" value="3" oninput="update()">
         <span class="ctrl-val" id="balls-val">3</span>
       </div>
     </div>
     <div class="ctrl-group">
-      <label>Ball weight</label>
+      <label id="weight-label">Ball weight</label>
       <div class="ctrl-row">
         <input type="range" id="weight" min="200" max="320" step="5" value="270" oninput="update()">
         <span class="ctrl-val" id="weight-val">270</span><span class="ctrl-unit">g</span>
@@ -152,6 +180,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
   <div class="ferment-row">
     <label id="ferment-label-title">Poolish ferment</label>
+    <button class="info-btn" type="button" id="poolish-info-btn" onclick="togglePopover(event,'poolish-popover')">i</button>
+    <div class="popover" id="poolish-popover"></div>
     <div class="flour-btns" id="ferment-btns">
       <button class="fbtn" onclick="setFerment(18,this)">18 hr</button>
       <button class="fbtn" onclick="setFerment(24,this)">24 hr</button>
@@ -169,7 +199,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="sep">·</div>
     <div><div class="label">Total water</div><div class="big" id="total-water">—</div></div>
     <div class="sep">·</div>
-    <div><div class="label">Pizza size</div><div class="big" id="pizza-size">—</div></div>
+    <div><div class="label" id="size-label">Pizza size</div><div class="big" id="pizza-size">—</div></div>
     <div class="sep">·</div>
     <div><div class="label">Bake</div><div class="big" id="bake-info">—</div></div>
   </div>
@@ -211,14 +241,38 @@ const DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Satur
 
 const FLOURS = {
   neo:[
-    {id:'pizzeria',  label:'Caputo Pizzeria', hydMin:58, hydMax:70, hydDef:63},
-    {id:'nuvola',    label:'Caputo Nuvola',   hydMin:65, hydMax:75, hydDef:67},
-    {id:'saccorosso',label:'Caputo Saccorosso',hydMin:60,hydMax:72,hydDef:63}
+    {id:'pizzeria',label:'Caputo Pizzeria (red)',protein:'12.5%',w:'W260',hydMin:58,hydMax:70,hydDef:63,info:'The Neapolitan standard. Balanced strength for 24\u201348hr ferments \u2014 the safe default for most home ovens and the Gozney.'},
+    {id:'nuvola',label:'Caputo Nuvola',protein:'12.5%',w:'W270\u2013280',hydMin:65,hydMax:78,hydDef:70,info:'Bred for very high hydration and an open, airy crumb. More extensible than Pizzeria \u2014 handle gently.'},
+    {id:'saccorosso',label:'Caputo Saccorosso (blue)',protein:'13%',w:'W300\u2013320',hydMin:60,hydMax:72,hydDef:63,info:'Stronger gluten network \u2014 built for long ferments (48\u201372hr+) and higher-temperature bakes.'},
+    {id:'cuoco',label:'Caputo Cuoco',protein:'13%',w:'W300',hydMin:60,hydMax:70,hydDef:62,info:'General-purpose strong 00 \u2014 equally at home in pasta as pizza. A solid all-rounder if buying one bag.'},
+    {id:'5stagioni',label:'Le 5 Stagioni Napoletana',protein:'12.5%',w:'W260\u2013280',hydMin:58,hydMax:68,hydDef:62,info:'A common, more affordable Caputo alternative in the UK \u2014 similar behaviour to Pizzeria.'},
+    {id:'polselli',label:'Polselli Classica',protein:'12.5%',w:'W260\u2013280',hydMin:60,hydMax:68,hydDef:63,info:'Versatile Italian 00, close to Caputo Pizzeria \u2014 less widely stocked outside specialist shops.'},
+    {id:'marino',label:'Mulino Marino Tipo 00',protein:'11.5%',w:'W220\u2013260',hydMin:55,hydMax:65,hydDef:60,info:'Stoneground, more character and flavour, but lower strength \u2014 best kept to shorter ferments.'}
   ],
   ny:[
-    {id:'manitoba',label:'Caputo Manitoba',    hydMin:55,hydMax:65,hydDef:58},
-    {id:'strong',  label:'Strong bread flour', hydMin:55,hydMax:63,hydDef:58}
+    {id:'strong-generic',label:'Strong white bread flour (generic)',protein:'12\u201313%',w:'\u2014',hydMin:55,hydMax:65,hydDef:58,info:'The everyday UK supermarket standard \u2014 Tesco / Sainsbury\u2019s / ASDA own-label all sit in this band.'},
+    {id:'allinsons',label:'Allinson\u2019s Strong White',protein:'13%',w:'\u2014',hydMin:55,hydMax:65,hydDef:58,info:'The most common named bread flour on UK shelves \u2014 reliable and consistent batch to batch.'},
+    {id:'doves',label:'Doves Farm Strong White',protein:'13%',w:'\u2014',hydMin:55,hydMax:67,hydDef:60,info:'Organic-leaning with slightly better water absorption than most own-label \u2014 works well with a poolish too.'},
+    {id:'marriages',label:'Marriage\u2019s Strong White',protein:'12.5%',w:'\u2014',hydMin:55,hydMax:65,hydDef:58,info:'A UK milling staple, similar to Doves Farm \u2014 a good stocked alternative if one\u2019s out.'},
+    {id:'canadian',label:'Canadian Very Strong (e.g. Waitrose)',protein:'14.9%',w:'W350+',hydMin:58,hydMax:68,hydDef:60,info:'Very high protein \u2014 technically more bread than pizza flour, but works well blended down for extra chew.'},
+    {id:'polselli-super',label:'Polselli Super',protein:'13.5%',w:'W320\u2013340',hydMin:62,hydMax:72,hydDef:65,info:'Strong Italian option for very long, high-hydration NY-style ferments (48\u201396hr).'}
+  ],
+  focaccia:[
+    {id:'foc-strong',label:'Strong white bread flour',protein:'12\u201313%',w:'\u2014',hydMin:70,hydMax:90,hydDef:80,info:'The standard focaccia base \u2014 its strength holds the very high hydration this dough needs.'},
+    {id:'foc-doves',label:'Doves Farm Strong White',protein:'13%',w:'\u2014',hydMin:72,hydMax:88,hydDef:80,info:'A step up in absorption over generic bread flour \u2014 handles the wet dough a little more predictably.'},
+    {id:'tipo0',label:'Tipo 0 flour',protein:'12%',w:'\u2014',hydMin:70,hydMax:85,hydDef:78,info:'Slightly less refined than 00, more character and bran \u2014 traditional in Ligurian focaccia.'},
+    {id:'foc-manitoba',label:'Manitoba blend base',protein:'14.5%',w:'W340\u2013400',hydMin:75,hydMax:90,hydDef:82,info:'A pre-blended high-protein base for very long (48hr+) cold bulk ferments with maximum oven spring.'}
   ]
+};
+
+const MANITOBA_INFO = 'Manitoba is a very high-protein Canadian-wheat flour (14\u201315%), almost never used alone. Blending 10\u201330% into a base flour boosts gluten strength, letting the dough handle longer ferments and higher hydration without collapsing \u2014 useful for 48hr+ cold ferments.';
+
+const POOLISH_INFO = 'Poolish is a wet pre-ferment \u2014 equal parts flour and water plus a trace of yeast, left to ferment for hours before it\u2019s mixed into the final dough. Because it ferments slowly over a long time it needs very little yeast, and that slow fermentation is what builds real flavour \u2014 the longer it goes, the more complex and slightly tangy the crust tastes. It also improves extensibility, making the dough easier to stretch thin without tearing.';
+
+const STYLE_CONTROLS = {
+  neo:     {ballsLabel:'Dough balls', weightLabel:'Ball weight', ballsMin:1,ballsMax:30,ballsDef:3, weightMin:200,weightMax:320,weightDef:270},
+  ny:      {ballsLabel:'Dough balls', weightLabel:'Ball weight', ballsMin:1,ballsMax:30,ballsDef:3, weightMin:200,weightMax:320,weightDef:270},
+  focaccia:{ballsLabel:'Number of trays', weightLabel:'Dough per tray', ballsMin:1,ballsMax:6,ballsDef:1, weightMin:500,weightMax:1400,weightDef:900}
 };
 
 // Yeast rates based on 0.15g per 175g poolish flour at 72hr (original recipe)
@@ -240,8 +294,22 @@ function setStyle(s,btn){
   style=s; flour=FLOURS[s][0].id;
   document.querySelectorAll('.style-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
-  document.getElementById('ferment-label-title').textContent = s==='neo'?'Poolish ferment':'Cold ferment';
-  renderFlourBtns();
+  const fermentLabel = s==='neo'?'Poolish ferment':(s==='focaccia'?'Bulk ferment':'Cold ferment');
+  document.getElementById('ferment-label-title').textContent = fermentLabel;
+  document.getElementById('poolish-info-btn').style.display = s==='neo'?'flex':'none';
+  document.getElementById('manitoba-row').style.display = s==='neo'?'none':'flex';
+  document.getElementById('manitoba').value=0;
+
+  const sc=STYLE_CONTROLS[s];
+  document.getElementById('balls-label').textContent=sc.ballsLabel;
+  document.getElementById('weight-label').textContent=sc.weightLabel;
+  const ballsEl=document.getElementById('balls');
+  ballsEl.min=sc.ballsMin; ballsEl.max=sc.ballsMax; ballsEl.value=sc.ballsDef;
+  const weightEl=document.getElementById('weight');
+  weightEl.min=sc.weightMin; weightEl.max=sc.weightMax; weightEl.value=sc.weightDef;
+
+  closeAllPopovers();
+  renderFlourSelect();
   applyFlourConstraints();
   update();
 }
@@ -249,27 +317,62 @@ function setStyle(s,btn){
 function setFlour(f){
   flour=f;
   applyFlourConstraints();
+  closeAllPopovers();
   update();
 }
 
 function applyFlourConstraints(){
   const fd=FLOURS[style].find(f2=>f2.id===flour);
   const h=document.getElementById('hydration');
-  h.min=fd.hydMin; h.max=fd.hydMax;
-  if(parseInt(h.value)<fd.hydMin||parseInt(h.value)>fd.hydMax) h.value=fd.hydDef;
+  const manitobaPct=parseInt(document.getElementById('manitoba').value)||0;
+  const bump=style==='neo'?0:Math.round(manitobaPct/30*5);
+  h.min=fd.hydMin; h.max=fd.hydMax+bump;
+  if(parseInt(h.value)<fd.hydMin||parseInt(h.value)>fd.hydMax+bump) h.value=fd.hydDef;
 }
 
-function renderFlourBtns(){
-  const c=document.getElementById('flour-btns');
-  c.innerHTML='';
+function renderFlourSelect(){
+  const sel=document.getElementById('flour-select');
+  sel.innerHTML='';
   FLOURS[style].forEach(f=>{
-    const b=document.createElement('button');
-    b.className='fbtn'+(f.id===flour?' active':'');
-    b.textContent=f.label;
-    b.onclick=()=>{setFlour(f.id);document.querySelectorAll('#flour-btns .fbtn').forEach(x=>x.classList.remove('active'));b.classList.add('active');};
-    c.appendChild(b);
+    const o=document.createElement('option');
+    o.value=f.id; o.textContent=f.label;
+    if(f.id===flour) o.selected=true;
+    sel.appendChild(o);
   });
 }
+
+function closeAllPopovers(){
+  document.querySelectorAll('.popover').forEach(p=>p.classList.remove('open'));
+}
+
+function togglePopover(evt,id){
+  evt.stopPropagation();
+  const pop=document.getElementById(id);
+  const wasOpen=pop.classList.contains('open');
+  closeAllPopovers();
+  if(!wasOpen){
+    renderPopoverContent(id);
+    pop.classList.add('open');
+  }
+}
+
+function renderPopoverContent(id){
+  const pop=document.getElementById(id);
+  if(id==='flour-popover'){
+    const fd=FLOURS[style].find(f=>f.id===flour);
+    pop.innerHTML=`<div class="p-title">${fd.label}</div>
+      <div class="p-stats"><span>Protein <b>${fd.protein}</b></span><span>Strength <b>${fd.w}</b></span></div>
+      <div>${fd.info}</div>`;
+  } else if(id==='poolish-popover'){
+    pop.innerHTML=`<div class="p-title">What is poolish?</div><div>${POOLISH_INFO}</div>`;
+  } else if(id==='manitoba-popover'){
+    pop.innerHTML=`<div class="p-title">Manitoba blend</div><div>${MANITOBA_INFO}</div>`;
+  }
+}
+
+document.addEventListener('click',(e)=>{
+  if(!e.target.closest('.popover')&&!e.target.closest('.info-btn')) closeAllPopovers();
+});
 
 function setFerment(hrs,btn){
   fermentHours=hrs;
@@ -299,6 +402,17 @@ function pizzaSize(g){
   return '14″';
 }
 
+function traySize(g){
+  if(g<=700) return '8×8in tray';
+  if(g<=1000) return '9×13in tray';
+  return 'Half sheet tray';
+}
+
+function manitobaPct(){
+  if(style==='neo') return 0;
+  return parseInt(document.getElementById('manitoba').value)||0;
+}
+
 function calcDough(){
   const balls    =parseInt(document.getElementById('balls').value);
   const weight   =parseInt(document.getElementById('weight').value);
@@ -315,7 +429,7 @@ function calcDough(){
     const finalWater  =totalWater-poolishWater;
     const yeast       =poolishFlour*YEAST_RATES[fermentHours].rate;
     return{totalDough,totalFlour,totalWater,salt,poolishFlour,poolishWater,finalFlour,finalWater,yeast};
-  } else {
+  } else if(style==='ny'){
     const totalFlour=totalDough/(1+hydration+0.02+0.02+0.01);
     const totalWater=totalFlour*hydration;
     const salt =totalFlour*0.02;
@@ -323,13 +437,32 @@ function calcDough(){
     const sugar=totalFlour*0.01;
     const yeast=totalFlour*YEAST_RATES[fermentHours].rate;
     return{totalDough,totalFlour,totalWater,salt,oil,sugar,yeast};
+  } else {
+    const totalFlour=totalDough/(1+hydration+0.025+0.05);
+    const totalWater=totalFlour*hydration;
+    const salt=totalFlour*0.025;
+    const oil =totalFlour*0.05;
+    const yeast=totalFlour*YEAST_RATES[fermentHours].rate;
+    return{totalDough,totalFlour,totalWater,salt,oil,yeast};
   }
+}
+
+function flourRows(amount,flourName){
+  const pct=manitobaPct();
+  if(pct>0){
+    const base=amount*(1-pct/100);
+    const man=amount*(pct/100);
+    return `<div class="row"><span class="name">${flourName} (${100-pct}%)</span><span class="amount">${fmt(base)}</span></div>
+            <div class="row"><span class="name">Manitoba blend (${pct}%) <span class="diff-tag">boost</span></span><span class="amount">${fmt(man)}</span></div>`;
+  }
+  return `<div class="row"><span class="name">${flourName}</span><span class="amount">${fmt(amount)}</span></div>`;
 }
 
 function renderRecipe(d){
   const grid=document.getElementById('recipe-grid');
   const fLabel=fermentHours+' hr';
-  const sz=pizzaSize(parseInt(document.getElementById('weight').value));
+  const weightVal=parseInt(document.getElementById('weight').value);
+  const sz=style==='focaccia'?traySize(weightVal):pizzaSize(weightVal);
   const flourName=FLOURS[style].find(f=>f.id===flour)?.label;
 
   if(style==='neo'){
@@ -369,12 +502,12 @@ function renderRecipe(d){
         </div>
       </div>
       <div class="note">Poolish is 50% of total flour at 100% hydration. Yeast calibrated to 0.15g per 175g poolish flour at 72 hr, scaled proportionally for other ferment times. Salt at 2.4% of total flour. No honey — long ferment generates natural sugars. Add day 2 water into poolish first, loosen with hands, then pour into dry flour.</div>`;
-  } else {
+  } else if(style==='ny'){
     grid.innerHTML=`
       <div class="stage full">
         <span class="badge badge-red">Straight dough — all in one mix</span>
         <div class="section-title">${flourName}</div>
-        <div class="row"><span class="name">Bread flour</span><span class="amount">${fmt(d.totalFlour)}</span></div>
+        ${flourRows(d.totalFlour,'Bread flour')}
         <div class="row"><span class="name">Water (lukewarm)</span><span class="amount">${fmt(d.totalWater)}</span></div>
         <div class="row"><span class="name">Instant dry yeast</span><span class="amount">${fmt(d.yeast)}</span></div>
         <div class="row"><span class="name">Fine sea salt</span><span class="amount">${fmt(d.salt)}</span></div>
@@ -409,6 +542,42 @@ function renderRecipe(d){
         </div>
       </div>
       <div class="note">No poolish for NY style — straight dough, all in one mix. Oil at 2%, sugar at 1% of flour. Use low moisture mozzarella not fresh. Rotate pizza halfway through bake.</div>`;
+  } else {
+    grid.innerHTML=`
+      <div class="stage full">
+        <span class="badge badge-amber">Day 1 — mix & bulk ferment</span>
+        <div class="section-title">${flourName}</div>
+        ${flourRows(d.totalFlour,'Bread flour')}
+        <div class="row"><span class="name">Water (lukewarm)</span><span class="amount">${fmt(d.totalWater)}</span></div>
+        <div class="row"><span class="name">Instant dry yeast</span><span class="amount">${fmt(d.yeast)}</span></div>
+        <div class="row"><span class="name">Fine sea salt</span><span class="amount">${fmt(d.salt)}</span></div>
+        <div class="row"><span class="name">Olive oil <span class="diff-tag">focaccia</span></span><span class="amount">${fmt(d.oil)}</span></div>
+        <div class="timing">
+          <div class="timing-item"><span class="t-val">6 min</span><span class="t-label">mixer</span></div>
+          <div class="timing-item"><span class="t-val">3× folds</span><span class="t-label">first hour</span></div>
+          <div class="timing-item"><span class="t-val">${fLabel}</span><span class="t-label">bulk in fridge</span></div>
+        </div>
+      </div>
+      <div class="stage">
+        <span class="badge badge-teal">Brine topping</span>
+        <div class="section-title">For dimpling before bake</div>
+        <div class="row"><span class="name">Olive oil</span><span class="amount">4 tbsp</span></div>
+        <div class="row"><span class="name">Water</span><span class="amount">2 tbsp</span></div>
+        <div class="row"><span class="name">Flaky sea salt</span><span class="amount">to taste</span></div>
+        <div class="timing">
+          <div class="timing-item"><span class="t-val">whisk</span><span class="t-label">before use</span></div>
+        </div>
+      </div>
+      <div class="stage">
+        <span class="badge badge-blue">Bake day</span>
+        <div class="steps-grid" style="grid-template-columns:1fr 1fr">
+          <div class="step"><div class="n">Into tray</div><div class="v">oiled, 1–2 hr</div></div>
+          <div class="step"><div class="n">Dimple</div><div class="v">with brine</div></div>
+          <div class="step"><div class="n">Oven temp</div><div class="v">220–230°C</div></div>
+          <div class="step"><div class="n">Bake</div><div class="v">20–25 min</div></div>
+        </div>
+      </div>
+      <div class="note">Straight dough, high hydration. Salt at 2.5% of flour, olive oil in the dough at 5% of flour (extra brine goes on top before baking). Handle gently — folds build structure without knocking out gas. Size guide: ${sz}.</div>`;
   }
 }
 
@@ -483,7 +652,7 @@ function renderTimeline(){
         </div>
       </div>
     </div>`;
-  } else {
+  } else if(style==='ny'){
     const mixDaysBack=Math.round(fermentHours/24);
     const mixDate=addDays(cookDate,-mixDaysBack);
     const restHour=ch-2;
@@ -516,6 +685,39 @@ function renderTimeline(){
         </div>
       </div>
     </div>`;
+  } else {
+    const mixDaysBack=Math.round(fermentHours/24);
+    const mixDate=addDays(cookDate,-mixDaysBack);
+    const trayHour=ch-3;
+
+    html+=`
+    <div class="day-block">
+      <div class="day-label">${dayName(mixDate)} — Mix day</div>
+      <div class="events">
+        <div class="event amber">
+          <div class="event-time">Evening</div>
+          <div class="event-body"><div class="event-title">Mix straight dough</div><div class="event-sub">6 min mixer · 3 folds over the first hour · into fridge</div></div>
+        </div>
+        <div class="proof-bar"><span>Bulk ferment begins</span><span class="hours">${fermentHours} hr in fridge</span></div>
+      </div>
+    </div>
+    <div class="day-block">
+      <div class="day-label">${dayName(cookDate)} — Bake day</div>
+      <div class="events">
+        <div class="event blue">
+          <div class="event-time">${fmt12(trayHour,cm)}</div>
+          <div class="event-body"><div class="event-title">Turn into oiled tray</div><div class="event-sub">Stretch gently to fit · 1–2 hr room temp second rise</div></div>
+        </div>
+        <div class="event teal">
+          <div class="event-time">${fmt12(ovenHour,cm)}</div>
+          <div class="event-body"><div class="event-title">Dimple & top</div><div class="event-sub">Whisked oil-water brine into dimples · flaky salt · preheat oven to 220–230°C</div></div>
+        </div>
+        <div class="event fire">
+          <div class="event-time">${fmt12(ch,cm)}</div>
+          <div class="event-body"><div class="event-title">Bake</div><div class="event-sub">20–25 min until deep golden · rest 10 min before slicing</div></div>
+        </div>
+      </div>
+    </div>`;
   }
   document.getElementById('timeline-content').innerHTML=html;
 }
@@ -528,17 +730,20 @@ function update(){
   document.getElementById('weight-val').textContent   =weight;
   document.getElementById('hydration-val').textContent=hydration;
   document.getElementById('yeast-note').textContent   =YEAST_RATES[fermentHours].note;
+  document.getElementById('manitoba-val').textContent =manitobaPct();
   const d=calcDough();
   document.getElementById('total-dough').textContent=Math.round(d.totalDough)+'g';
   document.getElementById('total-flour').textContent=Math.round(d.totalFlour)+'g';
   document.getElementById('total-water').textContent=Math.round(d.totalWater)+'g';
-  document.getElementById('pizza-size').textContent =pizzaSize(weight);
-  document.getElementById('bake-info').textContent  =style==='neo'?'~75 sec':'4–6 min';
+  document.getElementById('size-label').textContent =style==='focaccia'?'Tray size':'Pizza size';
+  document.getElementById('pizza-size').textContent =style==='focaccia'?traySize(weight):pizzaSize(weight);
+  document.getElementById('bake-info').textContent  =style==='neo'?'~75 sec':(style==='ny'?'4–6 min':'20–25 min');
+  if(document.getElementById('flour-popover').classList.contains('open')) renderPopoverContent('flour-popover');
   renderRecipe(d);
   renderTimeline();
 }
 
-renderFlourBtns();
+renderFlourSelect();
 applyFlourConstraints();
 update();
 </script>
