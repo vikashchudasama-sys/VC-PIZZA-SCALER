@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Titan+One&display=swap" rel="stylesheet">
 <style>
 :root{
   --color-background-primary:#ffffff;
@@ -23,7 +23,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .bg-scene img{width:100%;height:100%;object-fit:cover;display:block}
 .page{display:flex;flex-direction:column;align-items:center;gap:1rem;width:100%}
 .site-logo{display:flex;flex-direction:column;align-items:center;gap:0.5rem;max-width:640px;width:100%}
-.site-logo .badge-logo{width:280px;height:280px}
+.site-logo .badge-logo{width:100%;max-width:420px;height:auto}
 .site-tagline{color:var(--color-text-secondary);font-size:13px;text-align:center}
 .app-shell{display:flex;gap:1.5rem;align-items:flex-start;justify-content:center;width:100%}
 .side-panel{width:240px;flex-shrink:0;display:none}
@@ -145,52 +145,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <div class="page">
 
   <div class="site-logo">
-    <svg viewBox="0 0 200 200" class="badge-logo" role="img" aria-label="Easy Pizza Dough">
-      <defs>
-        <path id="logoArcTop" d="M 38.2 83.4 A 64 64 0 0 1 161.8 83.4" />
-        <path id="logoArcBot" d="M 36.2 117.1 A 66 66 0 0 0 163.8 117.1" />
-      </defs>
-      <path fill="#B3202A" d="M 196.0,100.0 L 187.6,108.6 L 194.2,118.7 L 184.2,125.5 L 188.7,136.7 L 177.6,141.5 L 179.8,153.3 L 168.0,155.8 L 167.9,167.9 L 155.8,168.0 L 153.3,179.8 L 141.5,177.6 L 136.7,188.7 L 125.5,184.2 L 118.7,194.2 L 108.6,187.6 L 100.0,196.0 L 91.4,187.6 L 81.3,194.2 L 74.5,184.2 L 63.3,188.7 L 58.5,177.6 L 46.7,179.8 L 44.2,168.0 L 32.1,167.9 L 32.0,155.8 L 20.2,153.3 L 22.4,141.5 L 11.3,136.7 L 15.8,125.5 L 5.8,118.7 L 12.4,108.6 L 4.0,100.0 L 12.4,91.4 L 5.8,81.3 L 15.8,74.5 L 11.3,63.3 L 22.4,58.5 L 20.2,46.7 L 32.0,44.2 L 32.1,32.1 L 44.2,32.0 L 46.7,20.2 L 58.5,22.4 L 63.3,11.3 L 74.5,15.8 L 81.3,5.8 L 91.4,12.4 L 100.0,4.0 L 108.6,12.4 L 118.7,5.8 L 125.5,15.8 L 136.7,11.3 L 141.5,22.4 L 153.3,20.2 L 155.8,32.0 L 167.9,32.1 L 168.0,44.2 L 179.8,46.7 L 177.6,58.5 L 188.7,63.3 L 184.2,74.5 L 194.2,81.3 L 187.6,91.4 Z"/>
-      <circle cx="100" cy="100" r="86" fill="#F3E9D2" stroke="#B3202A" stroke-width="3"/>
-
-      <text font-family="'Luckiest Guy', cursive" font-size="16" letter-spacing="1.5" fill="#B3202A">
-        <textPath href="#logoArcTop" startOffset="50%" text-anchor="middle">EASY</textPath>
-      </text>
-      <text font-family="'Luckiest Guy', cursive" font-size="15" letter-spacing="1.5" fill="#B3202A">
-        <textPath href="#logoArcBot" startOffset="50%" text-anchor="middle">PIZZA DOUGH</textPath>
-      </text>
-
-      <text x="42" y="103" font-family="Georgia, serif" font-size="7" letter-spacing="1" fill="#B3202A" text-anchor="middle">ESTD</text>
-      <text x="158" y="103" font-family="Georgia, serif" font-size="7" letter-spacing="1" fill="#B3202A" text-anchor="middle">2026</text>
-
-      <g fill="#B3202A">
-        <path d="M 58 60 l 2.6 6 l 6 2.6 l -6 2.6 l -2.6 6 l -2.6 -6 l -6 -2.6 l 6 -2.6 Z"/>
-        <path d="M 142 66 l 2.2 5 l 5 2.2 l -5 2.2 l -2.2 5 l -2.2 -5 l -5 -2.2 l 5 -2.2 Z"/>
-      </g>
-
-      <g transform="translate(100,108) scale(0.92)">
-        <path d="M -6 30 Q -20 38 -26 34" stroke="#B3202A" stroke-width="5" fill="none" stroke-linecap="round"/>
-        <ellipse cx="-28" cy="33" rx="6" ry="4" fill="#F3E9D2" stroke="#B3202A" stroke-width="2"/>
-        <path d="M 6 30 Q 16 40 14 48" stroke="#B3202A" stroke-width="5" fill="none" stroke-linecap="round"/>
-        <ellipse cx="15" cy="50" rx="6" ry="4" fill="#F3E9D2" stroke="#B3202A" stroke-width="2"/>
-
-        <path d="M -26 -10 L 26 -10 L 0 34 Z" fill="#B3202A" stroke="#B3202A" stroke-width="2" stroke-linejoin="round"/>
-        <path d="M -26 -10 L 26 -10 L 22 -4 L -22 -4 Z" fill="#D9A441"/>
-
-        <path d="M -20 2 Q -32 10 -30 20" stroke="#B3202A" stroke-width="5" fill="none" stroke-linecap="round"/>
-        <circle cx="-30" cy="21" r="5.5" fill="#F3E9D2" stroke="#B3202A" stroke-width="2"/>
-        <path d="M 18 0 Q 34 -6 34 -22" stroke="#B3202A" stroke-width="5" fill="none" stroke-linecap="round"/>
-        <circle cx="35" cy="-24" r="6" fill="#F3E9D2" stroke="#B3202A" stroke-width="2"/>
-
-        <circle cx="-9" cy="2" r="3" fill="#3A2418"/>
-        <circle cx="9" cy="2" r="3" fill="#3A2418"/>
-        <circle cx="-13" cy="8" r="3.5" fill="#E8918A" opacity="0.7"/>
-        <circle cx="13" cy="8" r="3.5" fill="#E8918A" opacity="0.7"/>
-        <path d="M -9 14 Q 0 22 9 14" stroke="#3A2418" stroke-width="2.2" fill="none" stroke-linecap="round"/>
-
-        <path d="M -14 -12 Q -18 -30 -6 -32 Q -2 -40 4 -32 Q 14 -32 12 -20 Q 18 -18 14 -10 Z" fill="#F3E9D2" stroke="#B3202A" stroke-width="2.5" stroke-linejoin="round"/>
-        <rect x="-15" y="-13" width="30" height="6" rx="3" fill="#F3E9D2" stroke="#B3202A" stroke-width="2.5"/>
-      </g>
+    <svg viewBox="0 0 520 150" class="badge-logo" role="img" aria-label="Easy Pizza Dough">
+      <rect x="10" y="10" width="500" height="130" rx="65" fill="#F3E9D2" stroke="#B3202A" stroke-width="5"/>
+      <text x="260" y="72" font-family="'Titan One', cursive" font-size="28" fill="#B3202A" text-anchor="middle" letter-spacing="2">EASY</text>
+      <text x="260" y="110" font-family="'Titan One', cursive" font-size="32" fill="#B3202A" text-anchor="middle" letter-spacing="1">PIZZA DOUGH</text>
     </svg>
     <p class="site-tagline">Neapolitan · New York · Focaccia · live quantities · timeline</p>
   </div>
