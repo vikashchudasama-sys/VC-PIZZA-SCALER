@@ -114,7 +114,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .flour-select-wrap select{font-size:12px;padding:5px 10px;border-radius:20px;border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);max-width:220px}
 .info-btn{width:18px;height:18px;border-radius:50%;border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-secondary);font-size:11px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;flex-shrink:0}
 .info-btn:hover{background:var(--color-background-secondary)}
-.popover{display:none;position:absolute;top:calc(100% + 8px);left:0;z-index:20;width:260px;background:var(--color-background-primary);border:0.5px solid var(--color-border-secondary);border-radius:10px;box-shadow:0 4px 16px rgba(0,0,0,0.12);padding:0.75rem 0.875rem;font-size:12px;color:var(--color-text-secondary);line-height:1.5}
+.popover{display:none;position:absolute;top:calc(100% + 8px);left:0;z-index:20;width:300px;background:var(--color-background-primary);border:0.5px solid var(--color-border-secondary);border-radius:10px;box-shadow:0 4px 16px rgba(0,0,0,0.12);padding:0.75rem 0.875rem;font-size:12px;color:var(--color-text-secondary);line-height:1.5}
 .popover.open{display:block}
 .popover .p-title{font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:4px}
 .popover .p-stats{display:flex;gap:10px;margin-bottom:6px;font-size:11px}
@@ -169,6 +169,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <select id="flour-select" onchange="setFlour(this.value)"></select>
       <button class="info-btn" type="button" onclick="togglePop(event,'flour-popover')">i</button>
       <div class="popover" id="flour-popover"></div>
+    </div>
+  </div>
+
+  <div class="flour-row" id="oven-brand-row">
+    <label>Pizza oven</label>
+    <div class="flour-select-wrap">
+      <select id="oven-brand-select" onchange="setOvenBrand(this.value)"></select>
+      <button class="info-btn" type="button" onclick="togglePop(event,'oven-brand-popover')">i</button>
+      <div class="popover" id="oven-brand-popover"></div>
     </div>
   </div>
 
@@ -301,7 +310,11 @@ const FLOURS = {
     {id:'cuoco',label:'Caputo Cuoco',protein:'13%',w:'W300',hydMin:60,hydMax:70,hydDef:62,info:'General-purpose strong 00 \u2014 equally at home in pasta as pizza. A solid all-rounder if buying one bag.'},
     {id:'5stagioni',label:'Le 5 Stagioni Napoletana',protein:'12.5%',w:'W260\u2013280',hydMin:58,hydMax:68,hydDef:62,info:'A common, more affordable Caputo alternative in the UK \u2014 similar behaviour to Pizzeria.'},
     {id:'polselli',label:'Polselli Classica',protein:'12.5%',w:'W260\u2013280',hydMin:60,hydMax:68,hydDef:63,info:'Versatile Italian 00, close to Caputo Pizzeria \u2014 less widely stocked outside specialist shops.'},
-    {id:'marino',label:'Mulino Marino Tipo 00',protein:'11.5%',w:'W220\u2013260',hydMin:55,hydMax:65,hydDef:60,info:'Stoneground, more character and flavour, but lower strength \u2014 best kept to shorter ferments.'}
+    {id:'marino',label:'Mulino Marino Tipo 00',protein:'11.5%',w:'W220\u2013260',hydMin:55,hydMax:65,hydDef:60,info:'Stoneground, more character and flavour, but lower strength \u2014 best kept to shorter ferments.'},
+    {id:'tesco-00',label:'Tesco Finest \u201800\u2019 Pasta & Pizza Flour',protein:'12.8%',w:'\u2014',hydMin:56,hydMax:66,hydDef:60,info:'Sold as a pasta flour but works well for pizza too \u2014 widely available and a reasonable everyday substitute for Italian 00 when you can\u2019t get Caputo.'},
+    {id:'sainsburys-00',label:'Sainsbury\u2019s Taste the Difference 00',protein:'12%',w:'\u2014',hydMin:55,hydMax:64,hydDef:58,info:'A fine 00 blended with durum wheat semolina, marketed for pasta but commonly used for pizza bases too. Good supermarket option if Tesco\u2019s isn\u2019t nearby.'},
+    {id:'ms-00',label:'M&S 00 Pasta Flour',protein:'12.9%',w:'\u2014',hydMin:56,hydMax:66,hydDef:60,info:'Home bakers report good results even with 72hr cold ferments \u2014 one of the more capable supermarket 00 flours, comparable to entry-level Caputo.'},
+    {id:'waitrose-00',label:'Waitrose Super Fine 00',protein:'\u224814%',w:'\u2014',hydMin:58,hydMax:68,hydDef:62,info:'The highest protein of the mainstream supermarket 00 flours \u2014 closer in behaviour to Caputo Pizzeria, so it copes better with longer ferments and higher hydration.'}
   ],
   ny:[
     {id:'strong-generic',label:'Strong white bread flour (generic)',protein:'12\u201313%',w:'\u2014',hydMin:55,hydMax:65,hydDef:58,info:'The everyday UK supermarket standard \u2014 Tesco / Sainsbury\u2019s / ASDA own-label all sit in this band.'},
@@ -326,6 +339,36 @@ const OVEN_TYPES = [
   {id:'tray',  label:'Baking tray (no stone/steel)', preheatMin:20, bakeTemp:'220–250°C (oven max)', bakeTime:'10–12 min', sizeIn:'10″', weightDef:200, info:'Without stored thermal mass under the dough, the base takes much longer to crisp. Keeping the pizza smaller and slightly thicker helps the centre cook through before the edges overcook. Preheating an ordinary tray upside-down for the last 15 minutes helps a little.'}
 ];
 let ovenType='steel';
+
+const OVEN_BRANDS = [
+  {id:'gozney', label:'Gozney (Dome / Arc / Tread)', preheatMin:25, tempRange:'430\u2013450\u00b0C', bakeTime:'75\u201390 sec', info:'Gozney\u2019s dual-fuel ovens hold heat exceptionally well thanks to thick insulation \u2014 expect consistent results bake after bake with minimal reheat time between pizzas.'},
+  {id:'roccbox', label:'Gozney Roccbox', preheatMin:15, tempRange:'430\u2013450\u00b0C', bakeTime:'~60 sec', info:'Fast-heating and portable, but limited to a 12\u2033 pizza. Its flame-capture design gives strong, even heat for a quick bake.'},
+  {id:'ooni-koda', label:'Ooni Koda', preheatMin:15, tempRange:'450\u2013480\u00b0C', bakeTime:'60\u201390 sec', info:'Gas-only with an L-shaped flame that cooks evenly with less turning than most. Available in 12\u2033 and 16\u2033 sizes.'},
+  {id:'ooni-karu', label:'Ooni Karu', preheatMin:25, tempRange:'450\u2013480\u00b0C', bakeTime:'~90 sec', info:'Wood or multi-fuel, so preheat takes a little longer and the flame is less even \u2014 rotate the pizza through the bake for consistent charring.'},
+  {id:'other-oven', label:'Other outdoor pizza oven', preheatMin:20, tempRange:'420\u2013450\u00b0C', bakeTime:'60\u201390 sec', info:'General guidance for wood-fired, gas or dual-fuel outdoor ovens not listed above. Preheat time and stone temperature vary by model \u2014 an infrared thermometer on the stone itself is more reliable than a built-in gauge.'}
+];
+let ovenBrand='gozney';
+
+function renderOvenBrandSelect(){
+  const sel=document.getElementById('oven-brand-select');
+  sel.innerHTML='';
+  OVEN_BRANDS.forEach(o=>{
+    const opt=document.createElement('option');
+    opt.value=o.id; opt.textContent=o.label;
+    if(o.id===ovenBrand) opt.selected=true;
+    sel.appendChild(opt);
+  });
+}
+
+function setOvenBrand(id){
+  ovenBrand=id;
+  closeAllPopovers();
+  update();
+}
+
+function currentOvenBrand(){
+  return OVEN_BRANDS.find(o=>o.id===ovenBrand)||OVEN_BRANDS[0];
+}
 
 function renderOvenSelect(){
   const sel=document.getElementById('oven-select');
@@ -440,9 +483,11 @@ function setStyle(s,btn){
   document.getElementById('manitoba-row').style.display = usesPoolish?'none':'flex';
   document.getElementById('tray-row').style.display = s==='focaccia'?'flex':'none';
   document.getElementById('oven-row').style.display = s==='home'?'flex':'none';
+  document.getElementById('oven-brand-row').style.display = (s==='neo'||s==='ny'||s==='focaccia')?'flex':'none';
   document.getElementById('manitoba').value=0;
   if(s==='focaccia'){ traySizeId='rect2333'; renderTraySelect(); }
   if(s==='home'){ ovenType='steel'; renderOvenSelect(); }
+  if(s==='neo'||s==='ny'||s==='focaccia'){ renderOvenBrandSelect(); }
 
   const sc=STYLE_CONTROLS[s];
   document.getElementById('balls-label').textContent=sc.ballsLabel;
@@ -504,13 +549,18 @@ function togglePop(evt,id){
   }
 }
 
+function hydrationGuidance(fd){
+  return `Handles ${fd.hydMin}\u2013${fd.hydMax}% hydration. New to this flour? Start around ${fd.hydDef}% \u2014 or closer to ${fd.hydMin}% for your very first few bakes. Pushing towards ${fd.hydMax}% gives a more open, airy crumb, but wetter dough is stickier and much harder to shape and stretch without tearing. Build up gradually as your technique improves.`;
+}
+
 function renderPopoverContent(id){
   const pop=document.getElementById(id);
   if(id==='flour-popover'){
     const fd=FLOURS[style].find(f=>f.id===flour);
     pop.innerHTML=`<div class="p-title">${fd.label}</div>
       <div class="p-stats"><span>Protein <b>${fd.protein}</b></span><span>Strength <b>${fd.w}</b></span></div>
-      <div>${fd.info}</div>`;
+      <div>${fd.info}</div>
+      <div style="margin-top:8px;padding-top:8px;border-top:0.5px solid var(--color-border-tertiary)"><b style="color:var(--color-text-primary)">Hydration:</b> ${hydrationGuidance(fd)}</div>`;
   } else if(id==='poolish-popover'){
     pop.innerHTML=`<div class="p-title">What is poolish?</div><div>${POOLISH_INFO}</div>`;
   } else if(id==='manitoba-popover'){
@@ -521,6 +571,9 @@ function renderPopoverContent(id){
     pop.innerHTML=`<div class="p-title">The fold technique</div><div>${FOLD_INFO}</div>`;
   } else if(id==='oven-popover'){
     const o=currentOven();
+    pop.innerHTML=`<div class="p-title">${o.label}</div><div>${o.info}</div>`;
+  } else if(id==='oven-brand-popover'){
+    const o=currentOvenBrand();
     pop.innerHTML=`<div class="p-title">${o.label}</div><div>${o.info}</div>`;
   }
 }
@@ -612,6 +665,7 @@ function renderRecipe(d){
   const fLabel=fermentHours+' hr';
   const weightVal=parseInt(document.getElementById('weight').value);
   const oven=currentOven();
+  const ob=currentOvenBrand();
   const sz=style==='focaccia'?trayLabel():(style==='home'?oven.sizeIn:pizzaSize(weightVal));
   const flourName=FLOURS[style].find(f=>f.id===flour)?.label;
 
@@ -641,13 +695,13 @@ function renderRecipe(d){
         </div>
       </div>
       <div class="stage full">
-        <span class="badge badge-blue">Bake day</span>
+        <span class="badge badge-blue">Bake day — ${ob.label}</span>
         <div class="steps-grid">
           <div class="step"><div class="n">Rest out</div><div class="v">2–3 hr</div></div>
           <div class="step"><div class="n">Dusting</div><div class="v">50/50 semolina+00</div></div>
           <div class="step"><div class="n">Stretch</div><div class="v">to ${sz}</div></div>
-          <div class="step"><div class="n">Stone temp</div><div class="v">420–450°C</div></div>
-          <div class="step"><div class="n">Bake</div><div class="v">~75 sec</div></div>
+          <div class="step"><div class="n">Stone temp</div><div class="v">${ob.tempRange}</div></div>
+          <div class="step"><div class="n">Bake</div><div class="v">${ob.bakeTime}</div></div>
           <div class="step"><div class="n">Basil & oil</div><div class="v">after bake</div></div>
         </div>
       </div>
@@ -720,15 +774,15 @@ function renderRecipe(d){
         </div>
       </div>
       <div class="stage">
-        <span class="badge badge-blue">Bake day</span>
+        <span class="badge badge-blue">Bake day — ${ob.label}</span>
         <div class="steps-grid" style="grid-template-columns:1fr 1fr">
           <div class="step"><div class="n">Rest out</div><div class="v">2 hr</div></div>
           <div class="step"><div class="n">Stretch thin</div><div class="v">to ${sz}</div></div>
-          <div class="step"><div class="n">Stone temp</div><div class="v">280–320°C</div></div>
-          <div class="step"><div class="n">Bake</div><div class="v">4–6 min</div></div>
+          <div class="step"><div class="n">Stone temp</div><div class="v">${ob.tempRange}</div></div>
+          <div class="step"><div class="n">Bake</div><div class="v">2–3 min</div></div>
         </div>
       </div>
-      <div class="note">No poolish for NY style — straight dough, all in one mix. Oil at 2%, sugar at 1% of flour. Use low moisture mozzarella not fresh. Rotate pizza halfway through bake.</div>`;
+      <div class="note">No poolish for NY style — straight dough, all in one mix. Oil at 2%, sugar at 1% of flour. Use low moisture mozzarella not fresh. NY dough is thicker than Neapolitan, so pull the flame back after preheating and rotate halfway through the longer bake.</div>`;
   } else {
     grid.innerHTML=`
       <div class="stage full">
@@ -766,15 +820,15 @@ function renderRecipe(d){
         </div>
       </div>
       <div class="stage">
-        <span class="badge badge-blue">Bake day</span>
+        <span class="badge badge-blue">Bake day — ${ob.label}</span>
         <div class="steps-grid" style="grid-template-columns:1fr 1fr">
           <div class="step"><div class="n">Into tray</div><div class="v">oiled, 1–2 hr</div></div>
           <div class="step"><div class="n">Dimple</div><div class="v">with brine</div></div>
-          <div class="step"><div class="n">Oven temp</div><div class="v">220–230°C</div></div>
-          <div class="step"><div class="n">Bake</div><div class="v">20–25 min</div></div>
+          <div class="step"><div class="n">Oven temp</div><div class="v">${ob.tempRange}</div></div>
+          <div class="step"><div class="n">Bake</div><div class="v">8–12 min</div></div>
         </div>
       </div>
-      <div class="note">Straight dough, high hydration, sized for one ${sz}. Salt at 2.5% of flour, olive oil in the dough at 5% of flour (extra brine goes on top before baking). Making more than one tray? Just repeat the recipe per tray — hydration and ratios stay the same regardless of size.</div>`;
+      <div class="note">Straight dough, high hydration, sized for one ${sz}. Salt at 2.5% of flour, olive oil in the dough at 5% of flour (extra brine goes on top before baking). These ovens run far hotter than a domestic oven, so turn the flame low or off after preheating and rely on residual heat — keep an eye on the top so it doesn't scorch. Making more than one tray? Just repeat the recipe per tray — hydration and ratios stay the same regardless of size.</div>`;
   }
 }
 
@@ -791,7 +845,6 @@ function renderTimeline(){
   let daysUntil=(cookDay-today.getDay()+7)%7||7;
   const cookDate=addDays(today,daysUntil);
   const pullHour=ch-3;
-  const ovenHour=ch-1;
   let html='';
 
   if(style==='neo'){
@@ -799,6 +852,8 @@ function renderTimeline(){
     const poolishDaysBack=Math.round(fermentHours/24);
     const poolishDate=addDays(ballDate,-poolishDaysBack);
     const ballProofHrs=Math.round((cookDate-ballDate)/3600000)-3;
+    const ob=currentOvenBrand();
+    const ovenLight=subtractMinutes(ch,cm,ob.preheatMin);
 
     html+=`
     <div class="day-block">
@@ -841,12 +896,12 @@ function renderTimeline(){
           <div class="event-body"><div class="event-title">Pull balls from fridge</div><div class="event-sub">3 hours room temp rest — don't rush · if hot day check at 2.5 hrs</div></div>
         </div>
         <div class="event fire">
-          <div class="event-time">${fmt12(ovenHour,cm)}</div>
-          <div class="event-body"><div class="event-title">Light the Gozney</div><div class="event-sub">Target stone temp 420–450°C · allow 45–60 min to heat through</div></div>
+          <div class="event-time">${fmt12(ovenLight.h,ovenLight.m)}</div>
+          <div class="event-body"><div class="event-title">Light the ${ob.label}</div><div class="event-sub">Target stone temp ${ob.tempRange} · allow ${ob.preheatMin} min to heat through</div></div>
         </div>
         <div class="event fire">
           <div class="event-time">${fmt12(ch,cm)}</div>
-          <div class="event-body"><div class="event-title">Cook</div><div class="event-sub">50/50 semolina+00 on peel · stretch to ${pizzaSize(parseInt(document.getElementById('weight').value))} · ~75 sec · basil & oil after</div></div>
+          <div class="event-body"><div class="event-title">Cook</div><div class="event-sub">50/50 semolina+00 on peel · stretch to ${pizzaSize(parseInt(document.getElementById('weight').value))} · ${ob.bakeTime} · basil & oil after</div></div>
         </div>
       </div>
     </div>`;
@@ -912,6 +967,8 @@ function renderTimeline(){
     const mixDaysBack=Math.round(fermentHours/24);
     const mixDate=addDays(cookDate,-mixDaysBack);
     const restHour=ch-2;
+    const obNy=currentOvenBrand();
+    const ovenLightNy=subtractMinutes(ch,cm,obNy.preheatMin);
 
     html+=`
     <div class="day-block">
@@ -932,12 +989,12 @@ function renderTimeline(){
           <div class="event-body"><div class="event-title">Pull balls from fridge</div><div class="event-sub">2 hours room temp rest before stretching</div></div>
         </div>
         <div class="event fire">
-          <div class="event-time">${fmt12(ovenHour,cm)}</div>
-          <div class="event-body"><div class="event-title">Light the Gozney</div><div class="event-sub">Target stone temp 280–320°C · low flame · allow 45–60 min</div></div>
+          <div class="event-time">${fmt12(ovenLightNy.h,ovenLightNy.m)}</div>
+          <div class="event-body"><div class="event-title">Light the ${obNy.label}</div><div class="event-sub">Target stone temp ${obNy.tempRange} · pull flame back once hot · allow ${obNy.preheatMin} min to heat through</div></div>
         </div>
         <div class="event fire">
           <div class="event-time">${fmt12(ch,cm)}</div>
-          <div class="event-body"><div class="event-title">Cook</div><div class="event-sub">Stretch thin to ${pizzaSize(parseInt(document.getElementById('weight').value))} · 4–6 min · rotate halfway · low moisture mozz should be golden</div></div>
+          <div class="event-body"><div class="event-title">Cook</div><div class="event-sub">Stretch thin to ${pizzaSize(parseInt(document.getElementById('weight').value))} · 2–3 min · rotate halfway · low moisture mozz should be golden</div></div>
         </div>
       </div>
     </div>`;
@@ -945,6 +1002,8 @@ function renderTimeline(){
     const mixDaysBack=Math.round(fermentHours/24);
     const mixDate=addDays(cookDate,-mixDaysBack);
     const trayHour=ch-3;
+    const obFoc=currentOvenBrand();
+    const ovenLightFoc=subtractMinutes(ch,cm,obFoc.preheatMin);
 
     html+=`
     <div class="day-block">
@@ -965,12 +1024,12 @@ function renderTimeline(){
           <div class="event-body"><div class="event-title">Turn into oiled tray</div><div class="event-sub">Stretch gently to fit · 1–2 hr room temp second rise</div></div>
         </div>
         <div class="event teal">
-          <div class="event-time">${fmt12(ovenHour,cm)}</div>
-          <div class="event-body"><div class="event-title">Dimple & top</div><div class="event-sub">Whisked oil-water brine into dimples · flaky salt · preheat oven to 220–230°C</div></div>
+          <div class="event-time">${fmt12(ovenLightFoc.h,ovenLightFoc.m)}</div>
+          <div class="event-body"><div class="event-title">Light the ${obFoc.label}</div><div class="event-sub">Whisked oil-water brine into dimples · flaky salt · preheat to ${obFoc.tempRange} then turn flame low/off</div></div>
         </div>
         <div class="event fire">
           <div class="event-time">${fmt12(ch,cm)}</div>
-          <div class="event-body"><div class="event-title">Bake</div><div class="event-sub">20–25 min until deep golden · rest 10 min before slicing</div></div>
+          <div class="event-body"><div class="event-title">Bake</div><div class="event-sub">8–12 min on residual heat until deep golden · rest 10 min before slicing</div></div>
         </div>
       </div>
     </div>`;
@@ -993,7 +1052,7 @@ function update(){
   document.getElementById('total-water').textContent=Math.round(d.totalWater)+'g';
   document.getElementById('size-label').textContent =style==='focaccia'?'Tray size':'Pizza size';
   document.getElementById('pizza-size').textContent =style==='focaccia'?trayLabel():(style==='home'?currentOven().sizeIn:pizzaSize(weight));
-  document.getElementById('bake-info').textContent  =style==='neo'?'~75 sec':(style==='ny'?'4–6 min':(style==='home'?currentOven().bakeTime:'20–25 min'));
+  document.getElementById('bake-info').textContent  =style==='neo'?currentOvenBrand().bakeTime:(style==='ny'?'2–3 min':(style==='home'?currentOven().bakeTime:'8–12 min'));
   if(document.getElementById('flour-popover').classList.contains('open')) renderPopoverContent('flour-popover');
   renderRecipe(d);
   renderTimeline();
@@ -1002,6 +1061,7 @@ function update(){
 renderFlourSelect();
 renderTraySelect();
 renderOvenSelect();
+renderOvenBrandSelect();
 renderBackground();
 applyFlourConstraints();
 layoutForWidth(wideQuery);
