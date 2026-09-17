@@ -31,7 +31,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .side-timeline-header{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;color:var(--color-text-secondary);margin-bottom:0.75rem;padding-bottom:0.5rem;border-bottom:0.5px solid var(--color-border-tertiary)}
 #side-timeline-slot #tab-timeline{padding:0;display:block}
 .card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg,12px);overflow:hidden;max-width:640px;width:100%}
-.style-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0}
+.style-row{display:grid;grid-template-columns:repeat(4,1fr);gap:0}
 .style-btn{padding:0.75rem 1rem;border:none;background:var(--color-background-secondary);color:var(--color-text-secondary);font-size:13px;font-weight:500;cursor:pointer;border-bottom:0.5px solid var(--color-border-tertiary);border-right:0.5px solid var(--color-border-tertiary);transition:all .15s}
 .style-btn:last-child{border-right:none}
 .style-btn.active{background:#1a1a1a;color:#f5f0e8}
@@ -160,6 +160,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <button class="style-btn active" onclick="setStyle('neo',this)">Neapolitan</button>
     <button class="style-btn" onclick="setStyle('ny',this)">New York</button>
     <button class="style-btn" onclick="setStyle('focaccia',this)">Focaccia</button>
+    <button class="style-btn" onclick="setStyle('home',this)">Home Oven</button>
   </div>
 
   <div class="flour-row">
@@ -175,6 +176,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <label>Tray size</label>
     <div class="flour-select-wrap">
       <select id="tray-select" onchange="setTraySize(this.value)"></select>
+    </div>
+  </div>
+
+  <div class="flour-row" id="oven-row" style="display:none">
+    <label>Oven setup</label>
+    <div class="flour-select-wrap">
+      <select id="oven-select" onchange="setOvenType(this.value)"></select>
+      <button class="info-btn" type="button" onclick="togglePop(event,'oven-popover')">i</button>
+      <div class="popover" id="oven-popover"></div>
     </div>
   </div>
 
@@ -308,6 +318,37 @@ const FLOURS = {
     {id:'foc-manitoba',label:'Manitoba blend base',protein:'14.5%',w:'W340\u2013400',hydMin:75,hydMax:90,hydDef:82,info:'A pre-blended high-protein base for very long (48hr+) cold bulk ferments with maximum oven spring.'}
   ]
 };
+FLOURS.home = FLOURS.neo;
+
+const OVEN_TYPES = [
+  {id:'steel', label:'Pizza steel', preheatMin:40, bakeTemp:'250–280°C (oven max)', bakeTime:'5–6 min', sizeIn:'12″', weightDef:270, info:'Steel conducts heat roughly 18–20× faster than stone, giving the best oven-spring and bottom char you\u2019ll get without a dedicated pizza oven. Preheat on the top shelf at full whack.'},
+  {id:'stone', label:'Pizza stone', preheatMin:55, bakeTemp:'250–280°C (oven max)', bakeTime:'7–8 min', sizeIn:'11″', weightDef:240, info:'Stone releases heat more gently than steel, so it takes longer to fully saturate. Expect a drier, chewier crust with less char — closer to New York texture than true Neapolitan.'},
+  {id:'tray',  label:'Baking tray (no stone/steel)', preheatMin:20, bakeTemp:'220–250°C (oven max)', bakeTime:'10–12 min', sizeIn:'10″', weightDef:200, info:'Without stored thermal mass under the dough, the base takes much longer to crisp. Keeping the pizza smaller and slightly thicker helps the centre cook through before the edges overcook. Preheating an ordinary tray upside-down for the last 15 minutes helps a little.'}
+];
+let ovenType='steel';
+
+function renderOvenSelect(){
+  const sel=document.getElementById('oven-select');
+  sel.innerHTML='';
+  OVEN_TYPES.forEach(o=>{
+    const opt=document.createElement('option');
+    opt.value=o.id; opt.textContent=o.label;
+    if(o.id===ovenType) opt.selected=true;
+    sel.appendChild(opt);
+  });
+}
+
+function setOvenType(id){
+  ovenType=id;
+  const o=OVEN_TYPES.find(x=>x.id===id);
+  document.getElementById('weight').value=o.weightDef;
+  closeAllPopovers();
+  update();
+}
+
+function currentOven(){
+  return OVEN_TYPES.find(o=>o.id===ovenType)||OVEN_TYPES[0];
+}
 
 const MANITOBA_INFO = 'Manitoba is a very high-protein Canadian-wheat flour (14\u201315%), almost never used alone. Blending 10\u201330% into a base flour boosts gluten strength, letting the dough handle longer ferments and higher hydration without collapsing \u2014 useful for 48hr+ cold ferments.';
 
@@ -320,7 +361,8 @@ const FOLD_INFO = 'High-hydration dough like this is too wet to knead by hand, s
 const BACKGROUNDS = {
   neo: 'https://images.pexels.com/photos/18677673/pexels-photo-18677673.jpeg?auto=compress&cs=tinysrgb&w=1920',
   ny: 'https://images.pexels.com/photos/32409117/pexels-photo-32409117.jpeg?auto=compress&cs=tinysrgb&w=1920',
-  focaccia: 'https://images.pexels.com/photos/11971015/pexels-photo-11971015.jpeg?auto=compress&cs=tinysrgb&w=1920'
+  focaccia: 'https://images.pexels.com/photos/11971015/pexels-photo-11971015.jpeg?auto=compress&cs=tinysrgb&w=1920',
+  home: 'https://images.pexels.com/photos/13736876/pexels-photo-13736876.jpeg?auto=compress&cs=tinysrgb&w=1920'
 };
 
 function renderBackground(){
@@ -338,6 +380,7 @@ wideQuery.addEventListener('change',layoutForWidth);
 const STYLE_CONTROLS = {
   neo:     {ballsLabel:'Dough balls', weightLabel:'Ball weight', ballsMin:1,ballsMax:30,ballsDef:3, weightMin:200,weightMax:320,weightDef:270},
   ny:      {ballsLabel:'Dough balls', weightLabel:'Ball weight', ballsMin:1,ballsMax:30,ballsDef:3, weightMin:200,weightMax:320,weightDef:270},
+  home:    {ballsLabel:'Dough balls', weightLabel:'Ball weight', ballsMin:1,ballsMax:30,ballsDef:3, weightMin:180,weightMax:320,weightDef:270},
   focaccia:{ballsLabel:'Number of trays', weightLabel:'Dough per tray', ballsMin:1,ballsMax:6,ballsDef:1, weightMin:400,weightMax:2400,weightDef:900}
 };
 
@@ -390,13 +433,16 @@ function setStyle(s,btn){
   style=s; flour=FLOURS[s][0].id;
   document.querySelectorAll('.style-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
-  const fermentLabel = s==='neo'?'Poolish ferment':(s==='focaccia'?'Bulk ferment':'Cold ferment');
+  const usesPoolish = s==='neo'||s==='home';
+  const fermentLabel = usesPoolish?'Poolish ferment':(s==='focaccia'?'Bulk ferment':'Cold ferment');
   document.getElementById('ferment-label-title').textContent = fermentLabel;
-  document.getElementById('poolish-info-btn').style.display = s==='neo'?'flex':'none';
-  document.getElementById('manitoba-row').style.display = s==='neo'?'none':'flex';
+  document.getElementById('poolish-info-btn').style.display = usesPoolish?'flex':'none';
+  document.getElementById('manitoba-row').style.display = usesPoolish?'none':'flex';
   document.getElementById('tray-row').style.display = s==='focaccia'?'flex':'none';
+  document.getElementById('oven-row').style.display = s==='home'?'flex':'none';
   document.getElementById('manitoba').value=0;
   if(s==='focaccia'){ traySizeId='rect2333'; renderTraySelect(); }
+  if(s==='home'){ ovenType='steel'; renderOvenSelect(); }
 
   const sc=STYLE_CONTROLS[s];
   document.getElementById('balls-label').textContent=sc.ballsLabel;
@@ -404,7 +450,7 @@ function setStyle(s,btn){
   const ballsEl=document.getElementById('balls');
   ballsEl.min=sc.ballsMin; ballsEl.max=sc.ballsMax; ballsEl.value=sc.ballsDef;
   const weightEl=document.getElementById('weight');
-  weightEl.min=sc.weightMin; weightEl.max=sc.weightMax; weightEl.value=sc.weightDef;
+  weightEl.min=sc.weightMin; weightEl.max=sc.weightMax; weightEl.value=s==='home'?currentOven().weightDef:sc.weightDef;
   document.getElementById('balls-group').style.display = s==='focaccia'?'none':'block';
   document.getElementById('weight-group').style.display = s==='focaccia'?'none':'block';
   document.getElementById('controls-grid').style.gridTemplateColumns = s==='focaccia'?'1fr':'1fr 1fr 1fr';
@@ -426,8 +472,8 @@ function setFlour(f){
 function applyFlourConstraints(){
   const fd=FLOURS[style].find(f2=>f2.id===flour);
   const h=document.getElementById('hydration');
-  const manitobaPct=parseInt(document.getElementById('manitoba').value)||0;
-  const bump=style==='neo'?0:Math.round(manitobaPct/30*5);
+  const manitobaPctVal=parseInt(document.getElementById('manitoba').value)||0;
+  const bump=(style==='neo'||style==='home')?0:Math.round(manitobaPctVal/30*5);
   h.min=fd.hydMin; h.max=fd.hydMax+bump;
   if(parseInt(h.value)<fd.hydMin||parseInt(h.value)>fd.hydMax+bump) h.value=fd.hydDef;
 }
@@ -473,6 +519,9 @@ function renderPopoverContent(id){
     pop.innerHTML=`<div class="p-title">What's the brine for?</div><div>${BRINE_INFO}</div>`;
   } else if(id==='fold-popover'){
     pop.innerHTML=`<div class="p-title">The fold technique</div><div>${FOLD_INFO}</div>`;
+  } else if(id==='oven-popover'){
+    const o=currentOven();
+    pop.innerHTML=`<div class="p-title">${o.label}</div><div>${o.info}</div>`;
   }
 }
 
@@ -509,7 +558,7 @@ function pizzaSize(g){
 }
 
 function manitobaPct(){
-  if(style==='neo') return 0;
+  if(style==='neo'||style==='home') return 0;
   return parseInt(document.getElementById('manitoba').value)||0;
 }
 
@@ -519,7 +568,7 @@ function calcDough(){
   const hydration=parseInt(document.getElementById('hydration').value)/100;
   const totalDough=style==='focaccia'?(TRAY_SIZES.find(t=>t.id===traySizeId)?.doughRec||900):balls*weight;
 
-  if(style==='neo'){
+  if(style==='neo'||style==='home'){
     const totalFlour  =totalDough/(1+hydration+0.024);
     const totalWater  =totalFlour*hydration;
     const salt        =totalFlour*0.024;
@@ -562,7 +611,8 @@ function renderRecipe(d){
   const grid=document.getElementById('recipe-grid');
   const fLabel=fermentHours+' hr';
   const weightVal=parseInt(document.getElementById('weight').value);
-  const sz=style==='focaccia'?trayLabel():pizzaSize(weightVal);
+  const oven=currentOven();
+  const sz=style==='focaccia'?trayLabel():(style==='home'?oven.sizeIn:pizzaSize(weightVal));
   const flourName=FLOURS[style].find(f=>f.id===flour)?.label;
 
   if(style==='neo'){
@@ -602,6 +652,43 @@ function renderRecipe(d){
         </div>
       </div>
       <div class="note">Poolish is 50% of total flour at 100% hydration. Yeast calibrated to 0.15g per 175g poolish flour at 72 hr, scaled proportionally for other ferment times. Salt at 2.4% of total flour. No honey — long ferment generates natural sugars. Add day 2 water into poolish first, loosen with hands, then pour into dry flour.</div>`;
+  } else if(style==='home'){
+    grid.innerHTML=`
+      <div class="stage">
+        <span class="badge badge-amber">Day 1 — poolish</span>
+        <div class="section-title">Mix & ferment</div>
+        <div class="row"><span class="name">00 flour (${flourName})</span><span class="amount">${fmt(d.poolishFlour)}</span></div>
+        <div class="row"><span class="name">Filtered water</span><span class="amount">${fmt(d.poolishWater)}</span></div>
+        <div class="row"><span class="name">Instant dry yeast</span><span class="amount">${fmt(d.yeast)}</span></div>
+        <div class="timing">
+          <div class="timing-item"><span class="t-val">2 hr</span><span class="t-label">room temp</span></div>
+          <div class="timing-item"><span class="t-val">${fLabel}</span><span class="t-label">fridge</span></div>
+        </div>
+      </div>
+      <div class="stage">
+        <span class="badge badge-teal">Day 2 — final dough</span>
+        <div class="section-title">Mix, fold & ball</div>
+        <div class="row"><span class="name">00 flour (${flourName})</span><span class="amount">${fmt(d.finalFlour)}</span></div>
+        <div class="row"><span class="name">Water (into poolish first)</span><span class="amount">${fmt(d.finalWater)}</span></div>
+        <div class="row"><span class="name">Salt</span><span class="amount">${fmt(d.salt)}</span></div>
+        <div class="timing">
+          <div class="timing-item"><span class="t-val">5 min</span><span class="t-label">mixer</span></div>
+          <div class="timing-item"><span class="t-val">30 min</span><span class="t-label">bench rest</span></div>
+          <div class="timing-item"><span class="t-val">${fLabel}</span><span class="t-label">cold proof</span></div>
+        </div>
+      </div>
+      <div class="stage full">
+        <span class="badge badge-blue">Bake day — ${oven.label}</span>
+        <div class="steps-grid">
+          <div class="step"><div class="n">Rest out</div><div class="v">2–3 hr</div></div>
+          <div class="step"><div class="n">Preheat</div><div class="v">${oven.preheatMin} min</div></div>
+          <div class="step"><div class="n">Stretch</div><div class="v">to ${sz}</div></div>
+          <div class="step"><div class="n">Oven temp</div><div class="v">${oven.bakeTemp}</div></div>
+          <div class="step"><div class="n">Bake</div><div class="v">${oven.bakeTime}</div></div>
+          <div class="step"><div class="n">Basil & oil</div><div class="v">after bake</div></div>
+        </div>
+      </div>
+      <div class="note">${oven.info}${oven.id!=='tray'?' Optional: finish under a hot grill/broiler for 60–90 sec at the end to blister the top and cheese, similar to what a dome would do in a dedicated oven.':''}</div>`;
   } else if(style==='ny'){
     grid.innerHTML=`
       <div class="stage full">
@@ -694,6 +781,7 @@ function renderRecipe(d){
 function addDays(date,days){const d=new Date(date);d.setDate(d.getDate()+days);return d;}
 function dayName(d){return DAYS[d.getDay()];}
 function fmt12(h,m){const ap=h>=12?'pm':'am';const hh=h%12||12;return`${hh}:${String(m).padStart(2,'0')}${ap}`;}
+function subtractMinutes(h,m,mins){let total=h*60+m-mins;total=((total%1440)+1440)%1440;return{h:Math.floor(total/60),m:total%60};}
 
 function renderTimeline(){
   const cookDay =parseInt(document.getElementById('cook-day').value);
@@ -759,6 +847,64 @@ function renderTimeline(){
         <div class="event fire">
           <div class="event-time">${fmt12(ch,cm)}</div>
           <div class="event-body"><div class="event-title">Cook</div><div class="event-sub">50/50 semolina+00 on peel · stretch to ${pizzaSize(parseInt(document.getElementById('weight').value))} · ~75 sec · basil & oil after</div></div>
+        </div>
+      </div>
+    </div>`;
+  } else if(style==='home'){
+    const ballDate   =addDays(cookDate,-1);
+    const poolishDaysBack=Math.round(fermentHours/24);
+    const poolishDate=addDays(ballDate,-poolishDaysBack);
+    const ballProofHrs=Math.round((cookDate-ballDate)/3600000)-3;
+    const oven=currentOven();
+    const preheat=subtractMinutes(ch,cm,oven.preheatMin);
+
+    html+=`
+    <div class="day-block">
+      <div class="day-label">${dayName(poolishDate)} — Day 1</div>
+      <div class="events">
+        <div class="event amber">
+          <div class="event-time">Evening</div>
+          <div class="event-body"><div class="event-title">Mix the poolish</div><div class="event-sub">Flour · water · yeast — stir until shaggy, cover tightly</div></div>
+        </div>
+        <div class="proof-bar"><span>2 hrs room temp then into fridge</span><span class="hours">${fermentHours} hr cold ferment</span></div>
+      </div>
+    </div>
+    <div class="day-block">
+      <div class="day-label">${dayName(ballDate)} — Day 2</div>
+      <div class="events">
+        <div class="event teal">
+          <div class="event-time">Evening</div>
+          <div class="event-body"><div class="event-title">Pull poolish — 1 hr room temp</div><div class="event-sub">Should be bubbly and domed</div></div>
+        </div>
+        <div class="event teal">
+          <div class="event-time">+1 hr</div>
+          <div class="event-body"><div class="event-title">Mix final dough</div><div class="event-sub">Add water to poolish first · loosen · pour into flour · 5 min mixer</div></div>
+        </div>
+        <div class="event teal">
+          <div class="event-time">+10 min</div>
+          <div class="event-body"><div class="event-title">Fold & bench rest</div><div class="event-sub">10–15 folds · shape into ball · cover · 30 min rest</div></div>
+        </div>
+        <div class="event teal">
+          <div class="event-time">+40 min</div>
+          <div class="event-body"><div class="event-title">Divide & ball up</div><div class="event-sub">Scale into ${document.getElementById('weight').value}g pieces · tight ball technique · into fridge</div></div>
+        </div>
+        <div class="proof-bar"><span>Ball cold proof begins</span><span class="hours">~${ballProofHrs} hr cold proof</span></div>
+      </div>
+    </div>
+    <div class="day-block">
+      <div class="day-label">${dayName(cookDate)} — Bake day</div>
+      <div class="events">
+        <div class="event blue">
+          <div class="event-time">${fmt12(pullHour,cm)}</div>
+          <div class="event-body"><div class="event-title">Pull balls from fridge</div><div class="event-sub">3 hours room temp rest — don't rush · if hot day check at 2.5 hrs</div></div>
+        </div>
+        <div class="event fire">
+          <div class="event-time">${fmt12(preheat.h,preheat.m)}</div>
+          <div class="event-body"><div class="event-title">Preheat ${oven.label.toLowerCase()}</div><div class="event-sub">Oven to max (${oven.bakeTemp}) · needs ${oven.preheatMin} min to fully saturate — don't rush this part</div></div>
+        </div>
+        <div class="event fire">
+          <div class="event-time">${fmt12(ch,cm)}</div>
+          <div class="event-body"><div class="event-title">Cook</div><div class="event-sub">Stretch to ${oven.sizeIn} · ${oven.bakeTime}${oven.id!=='tray'?' · optional grill finish 60–90 sec':''} · basil & oil after</div></div>
         </div>
       </div>
     </div>`;
@@ -846,8 +992,8 @@ function update(){
   document.getElementById('total-flour').textContent=Math.round(d.totalFlour)+'g';
   document.getElementById('total-water').textContent=Math.round(d.totalWater)+'g';
   document.getElementById('size-label').textContent =style==='focaccia'?'Tray size':'Pizza size';
-  document.getElementById('pizza-size').textContent =style==='focaccia'?trayLabel():pizzaSize(weight);
-  document.getElementById('bake-info').textContent  =style==='neo'?'~75 sec':(style==='ny'?'4–6 min':'20–25 min');
+  document.getElementById('pizza-size').textContent =style==='focaccia'?trayLabel():(style==='home'?currentOven().sizeIn:pizzaSize(weight));
+  document.getElementById('bake-info').textContent  =style==='neo'?'~75 sec':(style==='ny'?'4–6 min':(style==='home'?currentOven().bakeTime:'20–25 min'));
   if(document.getElementById('flour-popover').classList.contains('open')) renderPopoverContent('flour-popover');
   renderRecipe(d);
   renderTimeline();
@@ -855,6 +1001,7 @@ function update(){
 
 renderFlourSelect();
 renderTraySelect();
+renderOvenSelect();
 renderBackground();
 applyFlourConstraints();
 layoutForWidth(wideQuery);
