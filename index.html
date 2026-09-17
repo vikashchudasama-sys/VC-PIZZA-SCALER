@@ -28,6 +28,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .app-shell{display:flex;gap:1.5rem;align-items:flex-start;justify-content:center;width:100%}
 .side-panel{width:240px;flex-shrink:0;display:none}
 .side-timeline-panel{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:12px;padding:1rem 1.25rem;max-height:calc(100vh - 3rem);overflow-y:auto;width:320px}
+.side-info-panel{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:12px;padding:1rem 1.25rem;max-height:calc(100vh - 3rem);overflow-y:auto;width:300px;font-size:12px;color:var(--color-text-secondary);line-height:1.5}
+.info-block{margin-bottom:14px;padding-bottom:14px;border-bottom:0.5px solid var(--color-border-tertiary)}
+.info-block:last-child{margin-bottom:0;padding-bottom:0;border-bottom:none}
+.info-block-title{font-size:13px;font-weight:600;color:var(--color-text-primary);margin-bottom:4px}
 .side-timeline-header{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;color:var(--color-text-secondary);margin-bottom:0.75rem;padding-bottom:0.5rem;border-bottom:0.5px solid var(--color-border-tertiary)}
 #side-timeline-slot #tab-timeline{padding:0;display:block}
 .card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg,12px);overflow:hidden;max-width:640px;width:100%}
@@ -132,7 +136,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .badge-grey{background:#2A2A2A;color:#CCC}
 .diff-tag{background:#4A3600;color:#FFD97D}
 }
-@media(min-width:1050px){
+@media(min-width:1400px){
   .side-panel{display:block}
   .card{width:640px}
   #timeline-tab-btn{display:none}
@@ -154,6 +158,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   </div>
 
 <div class="app-shell">
+  <div class="side-panel side-info-panel">
+    <div class="side-timeline-header">About this bake</div>
+    <div id="info-panel-content"></div>
+  </div>
+
   <div class="card">
 
   <div class="style-row">
@@ -334,9 +343,9 @@ const FLOURS = {
 FLOURS.home = FLOURS.neo;
 
 const OVEN_TYPES = [
-  {id:'steel', label:'Pizza steel', preheatMin:40, bakeTemp:'250–280°C (oven max)', bakeTime:'5–6 min', sizeIn:'12″', weightDef:270, info:'Steel conducts heat roughly 18–20× faster than stone, giving the best oven-spring and bottom char you\u2019ll get without a dedicated pizza oven. Preheat on the top shelf at full whack.'},
-  {id:'stone', label:'Pizza stone', preheatMin:55, bakeTemp:'250–280°C (oven max)', bakeTime:'7–8 min', sizeIn:'11″', weightDef:240, info:'Stone releases heat more gently than steel, so it takes longer to fully saturate. Expect a drier, chewier crust with less char — closer to New York texture than true Neapolitan.'},
-  {id:'tray',  label:'Baking tray (no stone/steel)', preheatMin:20, bakeTemp:'220–250°C (oven max)', bakeTime:'10–12 min', sizeIn:'10″', weightDef:200, info:'Without stored thermal mass under the dough, the base takes much longer to crisp. Keeping the pizza smaller and slightly thicker helps the centre cook through before the edges overcook. Preheating an ordinary tray upside-down for the last 15 minutes helps a little.'}
+  {id:'steel', label:'Pizza steel', preheatMin:40, bakeTemp:'250–280°C (Gas Mark 9+ / oven max)', bakeTime:'5–6 min', sizeIn:'12″', weightDef:270, info:'Steel conducts heat roughly 18–20× faster than stone, giving the best oven-spring and bottom char you\u2019ll get without a dedicated pizza oven. Preheat on the top shelf at full whack.'},
+  {id:'stone', label:'Pizza stone', preheatMin:55, bakeTemp:'250–280°C (Gas Mark 9+ / oven max)', bakeTime:'7–8 min', sizeIn:'11″', weightDef:240, info:'Stone releases heat more gently than steel, so it takes longer to fully saturate. Expect a drier, chewier crust with less char — closer to New York texture than true Neapolitan.'},
+  {id:'tray',  label:'Baking tray (no stone/steel)', preheatMin:20, bakeTemp:'220–250°C (Gas Mark 7–9)', bakeTime:'10–12 min', sizeIn:'10″', weightDef:200, info:'Without stored thermal mass under the dough, the base takes much longer to crisp. Keeping the pizza smaller and slightly thicker helps the centre cook through before the edges overcook. Preheating an ordinary tray upside-down for the last 15 minutes helps a little.'}
 ];
 let ovenType='steel';
 
@@ -395,7 +404,7 @@ function currentOven(){
 
 const MANITOBA_INFO = 'Manitoba is a very high-protein Canadian-wheat flour (14\u201315%), almost never used alone. Blending 10\u201330% into a base flour boosts gluten strength, letting the dough handle longer ferments and higher hydration without collapsing \u2014 useful for 48hr+ cold ferments.';
 
-const POOLISH_INFO = 'Poolish is a wet pre-ferment \u2014 equal parts flour and water plus a trace of yeast, left to ferment for hours before it\u2019s mixed into the final dough. Because it ferments slowly over a long time it needs very little yeast, and that slow fermentation is what builds real flavour \u2014 the longer it goes, the more complex and slightly tangy the crust tastes. It also improves extensibility, making the dough easier to stretch thin without tearing.';
+const POOLISH_INFO = 'A poolish is a wet pre-ferment made the day before \u2014 equal parts flour and water plus a tiny amount of yeast, mixed into a thick batter and left to ferment slowly. Because there\u2019s hardly any yeast, it works gradually over many hours rather than rising fast, and that slow fermentation is what builds the deep, slightly tangy flavour real Neapolitan dough is known for. It also makes the final dough easier to stretch thin without tearing. To use it: mix it the evening before, leave it at room temperature for about 2 hours until it\u2019s active, then move it to the fridge to continue fermenting slowly overnight (or for however many hours your chosen ferment time says). The next day, pull it out of the fridge about an hour before you plan to mix your final dough, so it can come back up to room temperature and get bubbly and domed on top \u2014 that\u2019s the sign it\u2019s ready to use.';
 
 const BRINE_INFO = 'The oil-and-water brine is whisked together just before baking, then poured over the dough as you press in the dimples with your fingertips. In the oven, the water flashes to steam and helps crisp the base and edges, while the oil fries the surface as it bakes \u2014 that combination is what gives focaccia its glossy, slightly crisp top instead of a dry crust. It also carries the salt evenly into every dimple rather than sitting on the surface.';
 
@@ -412,7 +421,7 @@ function renderBackground(){
   document.getElementById('bg-scene').innerHTML = `<img src="${BACKGROUNDS[style]}" alt="">`;
 }
 
-const wideQuery=window.matchMedia('(min-width:1050px)');
+const wideQuery=window.matchMedia('(min-width:1400px)');
 function layoutForWidth(e){
   const timelineEl=document.getElementById('tab-timeline');
   const target=e.matches?document.getElementById('side-timeline-slot'):document.getElementById('tab-timeline-slot');
@@ -551,6 +560,29 @@ function togglePop(evt,id){
 
 function hydrationGuidance(fd){
   return `Handles ${fd.hydMin}\u2013${fd.hydMax}% hydration. New to this flour? Start around ${fd.hydDef}% \u2014 or closer to ${fd.hydMin}% for your very first few bakes. Pushing towards ${fd.hydMax}% gives a more open, airy crumb, but wetter dough is stickier and much harder to shape and stretch without tearing. Build up gradually as your technique improves.`;
+}
+
+function renderInfoPanel(){
+  const fd=FLOURS[style].find(f=>f.id===flour);
+  let html=`<div class="info-block"><div class="info-block-title">${fd.label}</div>
+    <div class="p-stats"><span>Protein <b>${fd.protein}</b></span><span>Strength <b>${fd.w}</b></span></div>
+    <div>${fd.info}</div>
+    <div style="margin-top:8px;padding-top:8px;border-top:0.5px solid var(--color-border-tertiary)"><b style="color:var(--color-text-primary)">Hydration:</b> ${hydrationGuidance(fd)}</div>
+  </div>`;
+
+  if(style==='home'){
+    const o=currentOven();
+    html+=`<div class="info-block"><div class="info-block-title">${o.label}</div><div>${o.info}</div></div>`;
+  } else {
+    const ob=currentOvenBrand();
+    html+=`<div class="info-block"><div class="info-block-title">${ob.label}</div><div>${ob.info}</div></div>`;
+  }
+
+  if(style==='neo'||style==='home'){
+    html+=`<div class="info-block"><div class="info-block-title">What is poolish?</div><div>${POOLISH_INFO}</div></div>`;
+  }
+
+  document.getElementById('info-panel-content').innerHTML=html;
 }
 
 function renderPopoverContent(id){
@@ -871,7 +903,7 @@ function renderTimeline(){
       <div class="events">
         <div class="event teal">
           <div class="event-time">Evening</div>
-          <div class="event-body"><div class="event-title">Pull poolish — 1 hr room temp</div><div class="event-sub">Should be bubbly and domed</div></div>
+          <div class="event-body"><div class="event-title">Pull the poolish from the fridge — 1 hr room temp</div><div class="event-sub">Should be bubbly and domed</div></div>
         </div>
         <div class="event teal">
           <div class="event-time">+1 hr</div>
@@ -929,7 +961,7 @@ function renderTimeline(){
       <div class="events">
         <div class="event teal">
           <div class="event-time">Evening</div>
-          <div class="event-body"><div class="event-title">Pull poolish — 1 hr room temp</div><div class="event-sub">Should be bubbly and domed</div></div>
+          <div class="event-body"><div class="event-title">Pull the poolish from the fridge — 1 hr room temp</div><div class="event-sub">Should be bubbly and domed</div></div>
         </div>
         <div class="event teal">
           <div class="event-time">+1 hr</div>
@@ -1054,6 +1086,7 @@ function update(){
   document.getElementById('pizza-size').textContent =style==='focaccia'?trayLabel():(style==='home'?currentOven().sizeIn:pizzaSize(weight));
   document.getElementById('bake-info').textContent  =style==='neo'?currentOvenBrand().bakeTime:(style==='ny'?'2–3 min':(style==='home'?currentOven().bakeTime:'8–12 min'));
   if(document.getElementById('flour-popover').classList.contains('open')) renderPopoverContent('flour-popover');
+  renderInfoPanel();
   renderRecipe(d);
   renderTimeline();
 }
