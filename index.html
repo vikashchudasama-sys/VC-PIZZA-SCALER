@@ -142,10 +142,54 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   #timeline-tab-btn{display:none}
   #tab-recipe{display:block !important}
 }
+
+.wizard-launch-bar{padding:0.6rem 1.5rem;background:var(--color-background-secondary);border-bottom:0.5px solid var(--color-border-tertiary);display:flex;justify-content:center}
+.wizard-launch-btn{font-size:12px;font-weight:600;padding:6px 14px;border-radius:20px;border:1px solid #B3202A;background:transparent;color:#B3202A;cursor:pointer}
+.wizard-launch-btn:hover{background:#B3202A;color:#fff}
+.wizard-overlay{position:fixed;inset:0;background:rgba(20,10,8,0.72);z-index:999;display:flex;align-items:center;justify-content:center;padding:1rem}
+.wizard-card{background:var(--color-background-primary);border-radius:16px;max-width:520px;width:100%;max-height:90vh;overflow-y:auto;padding:1.5rem;box-shadow:0 20px 60px rgba(0,0,0,0.4)}
+.wizard-progress{display:flex;gap:6px;justify-content:center;margin-bottom:1.25rem}
+.wizard-dot{width:8px;height:8px;border-radius:50%;background:var(--color-border-secondary)}
+.wizard-dot.active{background:#B3202A}
+.wizard-dot.done{background:#c9878b}
+.wizard-step-title{font-size:16px;font-weight:600;color:var(--color-text-primary);margin-bottom:1rem;text-align:center}
+.wizard-options{display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;margin-bottom:0.5rem}
+.wizard-options.single-col{grid-template-columns:1fr}
+.wizard-opt{padding:0.9rem 0.75rem;border-radius:10px;border:1.5px solid var(--color-border-secondary);background:var(--color-background-secondary);color:var(--color-text-primary);font-size:13px;font-weight:500;cursor:pointer;text-align:left;transition:all .15s}
+.wizard-opt.active{border-color:#B3202A;background:#FAEAEA;color:#7C1D1D}
+.wizard-opt-sub{display:block;font-size:11px;font-weight:400;color:var(--color-text-secondary);margin-top:2px}
+.wizard-info-box{margin-top:0.75rem;padding:0.75rem 0.9rem;background:var(--color-background-secondary);border-radius:10px;font-size:12px;color:var(--color-text-secondary);line-height:1.5}
+.wizard-info-box b{color:var(--color-text-primary)}
+.wizard-slider-wrap{padding:0.5rem 0.25rem}
+.wizard-slider-wrap input[type=range]{width:100%}
+.wizard-slider-val{font-size:22px;font-weight:600;color:var(--color-text-primary);text-align:center;margin-bottom:0.5rem}
+.wizard-field-row{display:flex;gap:0.75rem;margin-bottom:0.75rem}
+.wizard-field-row>div{flex:1}
+.wizard-field-row label{display:block;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.06em;color:var(--color-text-secondary);margin-bottom:4px}
+.wizard-field-row select,.wizard-field-row input{width:100%;padding:8px;border-radius:8px;border:1px solid var(--color-border-secondary);font-size:14px}
+.wizard-nav{display:flex;align-items:center;justify-content:space-between;margin-top:1.25rem;padding-top:1rem;border-top:0.5px solid var(--color-border-tertiary)}
+.wizard-nav button{padding:8px 18px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;border:none}
+#wizard-back{background:var(--color-background-secondary);color:var(--color-text-secondary)}
+#wizard-next{background:#B3202A;color:#fff}
+.wizard-skip{font-size:11px;color:var(--color-text-secondary);cursor:pointer;text-decoration:underline}
+@media(max-width:480px){.wizard-options{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <div class="bg-scene" id="bg-scene"></div>
+
+<div class="wizard-overlay" id="wizard-overlay" style="display:none">
+  <div class="wizard-card">
+    <div class="wizard-progress" id="wizard-progress"></div>
+    <div class="wizard-body" id="wizard-body"></div>
+    <div class="wizard-nav">
+      <button id="wizard-back" type="button" onclick="wizardBack()">Back</button>
+      <span class="wizard-skip" onclick="closeWizard()">Skip to full page</span>
+      <button id="wizard-next" type="button" onclick="wizardNext()">Next</button>
+    </div>
+  </div>
+</div>
+
 <div class="page">
 
   <div class="site-logo">
@@ -165,11 +209,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
   <div class="card">
 
+  <div class="wizard-launch-bar">
+    <button class="wizard-launch-btn" type="button" onclick="openWizard()">🧭 New here? Try guided setup</button>
+  </div>
+
   <div class="style-row">
-    <button class="style-btn active" onclick="setStyle('neo',this)">Neapolitan</button>
-    <button class="style-btn" onclick="setStyle('ny',this)">New York</button>
-    <button class="style-btn" onclick="setStyle('focaccia',this)">Focaccia</button>
-    <button class="style-btn" onclick="setStyle('home',this)">Home Oven</button>
+    <button class="style-btn active" data-style="neo" onclick="setStyle('neo',this)">Neapolitan</button>
+    <button class="style-btn" data-style="ny" onclick="setStyle('ny',this)">New York</button>
+    <button class="style-btn" data-style="focaccia" onclick="setStyle('focaccia',this)">Focaccia</button>
+    <button class="style-btn" data-style="home" onclick="setStyle('home',this)">Home Oven</button>
   </div>
 
   <div class="flour-row">
@@ -245,11 +293,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <button class="info-btn" type="button" id="poolish-info-btn" onclick="togglePop(event,'poolish-popover')">i</button>
     <div class="popover" id="poolish-popover"></div>
     <div class="flour-btns" id="ferment-btns">
-      <button class="fbtn" onclick="setFerment(18,this)">18 hr</button>
-      <button class="fbtn" onclick="setFerment(24,this)">24 hr</button>
-      <button class="fbtn" onclick="setFerment(36,this)">36 hr</button>
-      <button class="fbtn" onclick="setFerment(48,this)">48 hr</button>
-      <button class="fbtn active" onclick="setFerment(72,this)">72 hr</button>
+      <button class="fbtn" data-hours="18" onclick="setFerment(18,this)">18 hr</button>
+      <button class="fbtn" data-hours="24" onclick="setFerment(24,this)">24 hr</button>
+      <button class="fbtn" data-hours="36" onclick="setFerment(36,this)">36 hr</button>
+      <button class="fbtn" data-hours="48" onclick="setFerment(48,this)">48 hr</button>
+      <button class="fbtn active" data-hours="72" onclick="setFerment(72,this)">72 hr</button>
     </div>
     <span class="yeast-note" id="yeast-note"></span>
   </div>
@@ -481,6 +529,30 @@ let style = 'neo';
 let flour = 'pizzeria';
 let fermentHours = 72;
 
+const SETTINGS_PREFIX='epd_settings_';
+
+function loadStyleSettings(s){
+  try{
+    const raw=localStorage.getItem(SETTINGS_PREFIX+s);
+    return raw?JSON.parse(raw):null;
+  }catch(e){ return null; }
+}
+
+function saveStyleSettings(){
+  try{
+    const data={
+      flour, fermentHours, ovenType, ovenBrand, traySizeId,
+      hydration:document.getElementById('hydration').value,
+      balls:document.getElementById('balls').value,
+      weight:document.getElementById('weight').value,
+      manitoba:document.getElementById('manitoba').value,
+      cookDay:document.getElementById('cook-day').value,
+      cookTime:document.getElementById('cook-time').value
+    };
+    localStorage.setItem(SETTINGS_PREFIX+style, JSON.stringify(data));
+  }catch(e){ /* localStorage unavailable — ignore */ }
+}
+
 function setStyle(s,btn){
   style=s; flour=FLOURS[s][0].id;
   document.querySelectorAll('.style-btn').forEach(b=>b.classList.remove('active'));
@@ -494,9 +566,9 @@ function setStyle(s,btn){
   document.getElementById('oven-row').style.display = s==='home'?'flex':'none';
   document.getElementById('oven-brand-row').style.display = (s==='neo'||s==='ny'||s==='focaccia')?'flex':'none';
   document.getElementById('manitoba').value=0;
-  if(s==='focaccia'){ traySizeId='rect2333'; renderTraySelect(); }
-  if(s==='home'){ ovenType='steel'; renderOvenSelect(); }
-  if(s==='neo'||s==='ny'||s==='focaccia'){ renderOvenBrandSelect(); }
+  if(s==='focaccia'){ traySizeId='rect2333'; }
+  if(s==='home'){ ovenType='steel'; }
+  if(s==='neo'||s==='ny'||s==='focaccia'){ ovenBrand='gozney'; }
 
   const sc=STYLE_CONTROLS[s];
   document.getElementById('balls-label').textContent=sc.ballsLabel;
@@ -509,10 +581,40 @@ function setStyle(s,btn){
   document.getElementById('weight-group').style.display = s==='focaccia'?'none':'block';
   document.getElementById('controls-grid').style.gridTemplateColumns = s==='focaccia'?'1fr':'1fr 1fr 1fr';
 
+  // Recall this style's last saved setup, if any
+  const saved=loadStyleSettings(s);
+  let fermentToApply=72;
+  if(saved){
+    if(FLOURS[s].some(f=>f.id===saved.flour)) flour=saved.flour;
+    if(saved.ovenType && OVEN_TYPES.some(o=>o.id===saved.ovenType)) ovenType=saved.ovenType;
+    if(saved.ovenBrand && OVEN_BRANDS.some(o=>o.id===saved.ovenBrand)) ovenBrand=saved.ovenBrand;
+    if(saved.traySizeId && TRAY_SIZES.some(t=>t.id===saved.traySizeId)) traySizeId=saved.traySizeId;
+    if(saved.fermentHours && YEAST_RATES[saved.fermentHours]) fermentToApply=saved.fermentHours;
+    if(saved.manitoba!=null) document.getElementById('manitoba').value=saved.manitoba;
+    if(saved.balls!=null) ballsEl.value=saved.balls;
+    if(saved.weight!=null) weightEl.value=saved.weight;
+  }
+  fermentHours=fermentToApply;
+  document.querySelectorAll('#ferment-btns .fbtn').forEach(b=>b.classList.toggle('active', parseInt(b.dataset.hours)===fermentHours));
+
+  if(s==='focaccia'){ renderTraySelect(); }
+  if(s==='home'){ renderOvenSelect(); }
+  if(s==='neo'||s==='ny'||s==='focaccia'){ renderOvenBrandSelect(); }
+
   closeAllPopovers();
   renderFlourSelect();
   renderBackground();
   applyFlourConstraints();
+
+  if(saved){
+    if(saved.hydration!=null){
+      const h=document.getElementById('hydration');
+      const hv=parseInt(saved.hydration);
+      if(hv>=parseInt(h.min)&&hv<=parseInt(h.max)) h.value=hv;
+    }
+    if(saved.cookDay!=null) document.getElementById('cook-day').value=saved.cookDay;
+    if(saved.cookTime) document.getElementById('cook-time').value=saved.cookTime;
+  }
   update();
 }
 
@@ -1089,6 +1191,197 @@ function update(){
   renderInfoPanel();
   renderRecipe(d);
   renderTimeline();
+  saveStyleSettings();
+}
+
+/* ---------- Guided wizard ---------- */
+let wizardSteps=[];
+let wizardIndex=0;
+
+const STYLE_LABELS={neo:'Neapolitan',ny:'New York',focaccia:'Focaccia',home:'Home Oven'};
+const STYLE_SUB={neo:'Classic wood-fired style, poolish pre-ferment',ny:'Big, foldable slice, straight dough',focaccia:'Thick, olive-oil rich, baked in a tray',home:'No pizza oven? Steel, stone or a tray all work'};
+
+function computeWizardSteps(){
+  const steps=['style','flour'];
+  if(style==='home'){ steps.push('oven'); }
+  else { steps.push('ovenBrand'); if(style==='focaccia') steps.push('tray'); }
+  if(style==='ny'||style==='focaccia') steps.push('blend');
+  steps.push('hydration','ferment');
+  if(style!=='focaccia') steps.push('amount');
+  steps.push('cook');
+  return steps;
+}
+
+function openWizard(){
+  wizardIndex=0;
+  wizardSteps=computeWizardSteps();
+  document.getElementById('wizard-overlay').style.display='flex';
+  renderWizardStep();
+}
+
+function closeWizard(){
+  document.getElementById('wizard-overlay').style.display='none';
+}
+
+function finishWizard(){
+  closeWizard();
+}
+
+function wizardNext(){
+  if(wizardIndex<wizardSteps.length-1){
+    wizardIndex++;
+    renderWizardStep();
+  } else {
+    finishWizard();
+  }
+}
+
+function wizardBack(){
+  if(wizardIndex>0){
+    wizardIndex--;
+    renderWizardStep();
+  }
+}
+
+function wizardChooseStyle(s){
+  const btn=document.querySelector('.style-btn[data-style="'+s+'"]');
+  setStyle(s,btn);
+  wizardSteps=computeWizardSteps();
+  renderWizardStep();
+}
+
+function wizardSetFlour(f){
+  setFlour(f);
+  renderWizardStep();
+}
+
+function wizardSetOvenType(id){
+  setOvenType(id);
+  renderWizardStep();
+}
+
+function wizardSetOvenBrand(id){
+  setOvenBrand(id);
+  renderWizardStep();
+}
+
+function wizardSetTray(id){
+  setTraySize(id);
+  renderWizardStep();
+}
+
+function wizardSetFerment(hrs){
+  const btn=document.querySelector('#ferment-btns .fbtn[data-hours="'+hrs+'"]');
+  setFerment(hrs,btn);
+  renderWizardStep();
+}
+
+function wizardHydrationInput(v){
+  const h=document.getElementById('hydration');
+  h.value=v;
+  update();
+  document.getElementById('wizard-hyd-val').textContent=v+'%';
+}
+
+function wizardManitobaInput(v){
+  document.getElementById('manitoba').value=v;
+  applyFlourConstraints();
+  update();
+  document.getElementById('wizard-blend-val').textContent=v+'%';
+}
+
+function wizardBallsInput(v){
+  document.getElementById('balls').value=v;
+  update();
+  document.getElementById('wizard-balls-val').textContent=v;
+}
+
+function wizardWeightInput(v){
+  document.getElementById('weight').value=v;
+  update();
+  document.getElementById('wizard-weight-val').textContent=v+'g';
+}
+
+function wizardCookChange(){
+  document.getElementById('cook-day').value=document.getElementById('wizard-cook-day').value;
+  document.getElementById('cook-time').value=document.getElementById('wizard-cook-time').value;
+  update();
+}
+
+function optCard(active,onclick,title,sub){
+  return `<button type="button" class="wizard-opt${active?' active':''}" onclick="${onclick}">${title}${sub?`<span class="wizard-opt-sub">${sub}</span>`:''}</button>`;
+}
+
+function renderWizardStep(){
+  const name=wizardSteps[wizardIndex];
+  const body=document.getElementById('wizard-body');
+  let html='';
+
+  if(name==='style'){
+    html=`<div class="wizard-step-title">What are you making?</div><div class="wizard-options">`+
+      ['neo','ny','focaccia','home'].map(s=>optCard(style===s,`wizardChooseStyle('${s}')`,STYLE_LABELS[s],STYLE_SUB[s])).join('')+
+      `</div>`;
+  } else if(name==='flour'){
+    const list=FLOURS[style];
+    const fd=list.find(f=>f.id===flour)||list[0];
+    html=`<div class="wizard-step-title">Which flour are you using?</div><div class="wizard-options single-col">`+
+      list.map(f=>optCard(f.id===flour,`wizardSetFlour('${f.id}')`,f.label,`Protein ${f.protein}`)).join('')+
+      `</div><div class="wizard-info-box">${fd.info}<br><br><b>Hydration:</b> ${hydrationGuidance(fd)}</div>`;
+  } else if(name==='oven'){
+    html=`<div class="wizard-step-title">What are you baking on?</div><div class="wizard-options single-col">`+
+      OVEN_TYPES.map(o=>optCard(o.id===ovenType,`wizardSetOvenType('${o.id}')`,o.label,`Preheat ${o.preheatMin} min · ${o.bakeTemp}`)).join('')+
+      `</div><div class="wizard-info-box">${currentOven().info}</div>`;
+  } else if(name==='ovenBrand'){
+    html=`<div class="wizard-step-title">Which oven are you cooking on?</div><div class="wizard-options single-col">`+
+      OVEN_BRANDS.map(o=>optCard(o.id===ovenBrand,`wizardSetOvenBrand('${o.id}')`,o.label,`${o.tempRange} · ${o.bakeTime}`)).join('')+
+      `</div><div class="wizard-info-box">${currentOvenBrand().info}</div>`;
+  } else if(name==='tray'){
+    html=`<div class="wizard-step-title">What tray are you using?</div><div class="wizard-options single-col">`+
+      TRAY_SIZES.map(t=>optCard(t.id===traySizeId,`wizardSetTray('${t.id}')`,t.label,`~${t.doughRec}g dough`)).join('')+
+      `</div>`;
+  } else if(name==='blend'){
+    const v=document.getElementById('manitoba').value;
+    html=`<div class="wizard-step-title">Manitoba blend?</div>
+      <div class="wizard-slider-val" id="wizard-blend-val">${v}%</div>
+      <div class="wizard-slider-wrap"><input type="range" min="0" max="30" step="5" value="${v}" oninput="wizardManitobaInput(this.value)"></div>
+      <div class="wizard-info-box">${MANITOBA_INFO}</div>`;
+  } else if(name==='hydration'){
+    const h=document.getElementById('hydration');
+    const fd=FLOURS[style].find(f=>f.id===flour);
+    html=`<div class="wizard-step-title">Choose your hydration</div>
+      <div class="wizard-slider-val" id="wizard-hyd-val">${h.value}%</div>
+      <div class="wizard-slider-wrap"><input type="range" min="${h.min}" max="${h.max}" step="1" value="${h.value}" oninput="wizardHydrationInput(this.value)"></div>
+      <div class="wizard-info-box">${hydrationGuidance(fd)}</div>`;
+  } else if(name==='ferment'){
+    html=`<div class="wizard-step-title">How long will you ferment?</div><div class="wizard-options single-col">`+
+      [18,24,36,48,72].map(h=>optCard(h===fermentHours,`wizardSetFerment(${h})`,h+' hours',YEAST_RATES[h].note)).join('')+
+      `</div>`;
+  } else if(name==='amount'){
+    const sc=STYLE_CONTROLS[style];
+    const ballsEl=document.getElementById('balls'), weightEl=document.getElementById('weight');
+    html=`<div class="wizard-step-title">How much dough?</div>
+      <label style="font-size:12px;color:var(--color-text-secondary)">${sc.ballsLabel}: <b id="wizard-balls-val">${ballsEl.value}</b></label>
+      <div class="wizard-slider-wrap"><input type="range" min="${sc.ballsMin}" max="${sc.ballsMax}" step="1" value="${ballsEl.value}" oninput="wizardBallsInput(this.value)"></div>
+      <label style="font-size:12px;color:var(--color-text-secondary)">${sc.weightLabel}: <b id="wizard-weight-val">${weightEl.value}g</b></label>
+      <div class="wizard-slider-wrap"><input type="range" min="${sc.weightMin}" max="${sc.weightMax}" step="5" value="${weightEl.value}" oninput="wizardWeightInput(this.value)"></div>`;
+  } else if(name==='cook'){
+    const cd=document.getElementById('cook-day').value, ct=document.getElementById('cook-time').value;
+    html=`<div class="wizard-step-title">When are you cooking?</div>
+      <div class="wizard-field-row">
+        <div><label>Cook day</label><select id="wizard-cook-day" onchange="wizardCookChange()">
+          ${DAYS.map((d,i)=>`<option value="${i}"${String(i)===cd?' selected':''}>${d}</option>`).join('')}
+        </select></div>
+        <div><label>Cook time</label><input type="time" id="wizard-cook-time" value="${ct}" onchange="wizardCookChange()"></div>
+      </div>
+      <div class="wizard-info-box">We'll work backwards from this to schedule everything — mixing, folding, fridge time and preheating.</div>`;
+  }
+
+  body.innerHTML=html;
+
+  document.getElementById('wizard-progress').innerHTML=wizardSteps.map((s,i)=>
+    `<span class="wizard-dot${i===wizardIndex?' active':(i<wizardIndex?' done':'')}"></span>`).join('');
+  document.getElementById('wizard-back').style.visibility=wizardIndex===0?'hidden':'visible';
+  document.getElementById('wizard-next').textContent=wizardIndex===wizardSteps.length-1?'Finish':'Next';
 }
 
 renderFlourSelect();
