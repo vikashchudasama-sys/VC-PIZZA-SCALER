@@ -23,7 +23,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .bg-scene img{width:100%;height:100%;object-fit:cover;display:block}
 .page{display:flex;flex-direction:column;align-items:center;gap:1rem;width:100%}
 .site-logo{display:flex;flex-direction:column;align-items:center;gap:0.5rem;max-width:640px;width:100%}
-.site-logo .badge-logo{width:100%;max-width:420px;height:auto}
+.site-logo .badge-logo{width:100%;max-width:520px;height:auto}
 .site-tagline{color:var(--color-text-secondary);font-size:13px;text-align:center}
 .app-shell{display:flex;gap:1.5rem;align-items:flex-start;justify-content:center;width:100%}
 .side-panel{width:240px;flex-shrink:0;display:none}
@@ -36,9 +36,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 #side-timeline-slot #tab-timeline{padding:0;display:block}
 .card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg,12px);overflow:hidden;max-width:640px;width:100%}
 .style-row{display:grid;grid-template-columns:repeat(4,1fr);gap:0}
-.style-btn{padding:0.75rem 1rem;border:none;background:var(--color-background-secondary);color:var(--color-text-secondary);font-size:13px;font-weight:500;cursor:pointer;border-bottom:0.5px solid var(--color-border-tertiary);border-right:0.5px solid var(--color-border-tertiary);transition:all .15s}
+.style-btn{padding:1rem 1rem;border:none;background:var(--color-background-secondary);color:var(--color-text-secondary);font-size:14px;font-weight:700;letter-spacing:0.02em;cursor:pointer;border-bottom:2px solid var(--color-border-tertiary);border-right:0.5px solid var(--color-border-tertiary);transition:all .15s}
 .style-btn:last-child{border-right:none}
-.style-btn.active{background:#1a1a1a;color:#f5f0e8}
+.style-btn:hover{background:var(--color-border-tertiary)}
+.style-btn.active{background:#B3202A;color:#fff;border-bottom-color:#B3202A;box-shadow:inset 0 -3px 0 rgba(0,0,0,0.15)}
 .flour-row{padding:0.75rem 1.5rem;border-bottom:0.5px solid var(--color-border-tertiary);background:var(--color-background-secondary);display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap}
 .flour-row label{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;color:var(--color-text-secondary);white-space:nowrap}
 .flour-btns{display:flex;gap:6px;flex-wrap:wrap}
@@ -58,9 +59,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .total-bar .big{font-size:18px;font-weight:500;color:var(--color-text-primary)}
 .total-bar .sep{color:var(--color-border-secondary);font-size:14px;align-self:center}
 .tabs{display:flex;border-bottom:0.5px solid var(--color-border-tertiary)}
-.tab{flex:1;padding:0.6rem;font-size:12px;font-weight:500;text-align:center;cursor:pointer;background:var(--color-background-secondary);color:var(--color-text-secondary);border:none;border-right:0.5px solid var(--color-border-tertiary);transition:all .15s}
+.tab{flex:1;padding:0.9rem 0.6rem;font-size:14px;font-weight:700;letter-spacing:0.02em;text-align:center;cursor:pointer;background:var(--color-background-secondary);color:var(--color-text-secondary);border:none;border-right:0.5px solid var(--color-border-tertiary);border-bottom:3px solid transparent;transition:all .15s}
+.tab:hover{background:var(--color-border-tertiary)}
 .tab:last-child{border-right:none}
-.tab.active{background:var(--color-background-primary);color:var(--color-text-primary)}
+.tab.active{background:var(--color-background-primary);color:var(--color-text-primary);border-bottom-color:#B3202A}
 .tab-content{display:none;padding:1.25rem 1.5rem}
 .tab-content.active{display:block}
 .recipe-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
@@ -128,7 +130,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .manitoba-row label{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;color:var(--color-text-secondary);white-space:nowrap}
 .manitoba-row .ctrl-row{flex:1;max-width:180px}
 @media(prefers-color-scheme:dark){
-.style-btn.active,.fbtn.active{background:#f5f0e8;color:#1a1a1a;border-color:#f5f0e8}
+.fbtn.active{background:#f5f0e8;color:#1a1a1a;border-color:#f5f0e8}
+.style-btn.active{background:#e0453f;color:#fff;border-bottom-color:#e0453f}
+.tab.active{border-bottom-color:#e0453f}
 .badge-amber{background:#412402;color:#FAC775}
 .badge-teal{background:#04342C;color:#5DCAA5}
 .badge-blue{background:#042C53;color:#85B7EB}
@@ -143,9 +147,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   #tab-recipe{display:block !important}
 }
 
-.wizard-launch-bar{padding:0.6rem 1.5rem;background:var(--color-background-secondary);border-bottom:0.5px solid var(--color-border-tertiary);display:flex;justify-content:center}
-.wizard-launch-btn{font-size:12px;font-weight:600;padding:6px 14px;border-radius:20px;border:1px solid #B3202A;background:transparent;color:#B3202A;cursor:pointer}
-.wizard-launch-btn:hover{background:#B3202A;color:#fff}
+.wizard-launch-bar{padding:0.9rem 1.5rem;background:var(--color-background-secondary);border-bottom:0.5px solid var(--color-border-tertiary);display:flex;justify-content:center}
+.wizard-launch-btn{font-size:15px;font-weight:700;padding:12px 26px;border-radius:26px;border:2px solid #B3202A;background:#B3202A;color:#fff;cursor:pointer;box-shadow:0 4px 14px rgba(179,32,42,0.35);transition:all .15s}
+.wizard-launch-btn:hover{background:#8f1a22;box-shadow:0 6px 18px rgba(179,32,42,0.45);transform:translateY(-1px)}
 .wizard-overlay{position:fixed;inset:0;background:rgba(20,10,8,0.72);z-index:999;display:flex;align-items:center;justify-content:center;padding:1rem}
 .wizard-card{background:var(--color-background-primary);border-radius:16px;max-width:520px;width:100%;max-height:90vh;overflow-y:auto;padding:1.5rem;box-shadow:0 20px 60px rgba(0,0,0,0.4)}
 .wizard-progress{display:flex;gap:6px;justify-content:center;margin-bottom:1.25rem}
@@ -172,6 +176,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 #wizard-back{background:var(--color-background-secondary);color:var(--color-text-secondary)}
 #wizard-next{background:#B3202A;color:#fff}
 .wizard-skip{font-size:11px;color:var(--color-text-secondary);cursor:pointer;text-decoration:underline}
+.wizard-card.wizard-review{max-width:680px}
+.wizard-summary-bar{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;padding:0.75rem 1rem;background:var(--color-background-secondary);border-radius:10px;margin-bottom:1rem}
+.wizard-summary-bar>div{text-align:center}
+.wizard-summary-bar .label{display:block;font-size:10px;text-transform:uppercase;letter-spacing:0.06em;color:var(--color-text-secondary)}
+.wizard-summary-bar .big{display:block;font-size:15px;font-weight:600;color:var(--color-text-primary)}
+.wizard-review-scroll{max-height:42vh;overflow-y:auto;border:0.5px solid var(--color-border-tertiary);border-radius:10px;padding:1rem;margin-bottom:1rem}
+.wizard-review-scroll .recipe-grid{margin-bottom:1rem}
+.wizard-close-note{padding:0.85rem 1rem;background:#FAEAEA;color:#7C1D1D;border-radius:10px;font-size:13px;line-height:1.5;font-weight:500;text-align:center}
+@media(prefers-color-scheme:dark){.wizard-close-note{background:#4A0D0D;color:#F4AAAA}}
 @media(max-width:480px){.wizard-options{grid-template-columns:1fr}}
 </style>
 </head>
@@ -179,7 +192,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <div class="bg-scene" id="bg-scene"></div>
 
 <div class="wizard-overlay" id="wizard-overlay" style="display:none">
-  <div class="wizard-card">
+  <div class="wizard-card" id="wizard-card">
     <div class="wizard-progress" id="wizard-progress"></div>
     <div class="wizard-body" id="wizard-body"></div>
     <div class="wizard-nav">
@@ -285,6 +298,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
         <input type="range" id="hydration" min="55" max="75" step="1" value="63" oninput="update()">
         <span class="ctrl-val" id="hydration-val">63</span><span class="ctrl-unit">%</span>
       </div>
+    </div>
+  </div>
+
+  <div class="ferment-row" id="mix-row">
+    <label>Mixing method</label>
+    <button class="info-btn" type="button" id="mix-info-btn" onclick="togglePop(event,'mix-popover')">i</button>
+    <div class="popover" id="mix-popover"></div>
+    <div class="flour-btns" id="mix-btns">
+      <button class="fbtn active" data-method="mixer" onclick="setMixMethod('mixer',this)">Stand mixer</button>
+      <button class="fbtn" data-method="hand" onclick="setMixMethod('hand',this)">By hand</button>
     </div>
   </div>
 
@@ -528,6 +551,36 @@ const YEAST_RATES = {
 let style = 'neo';
 let flour = 'pizzeria';
 let fermentHours = 72;
+let mixMethod = 'mixer';
+
+const MIX_INFO = {
+  neo:{
+    mixer:{time:'5 min', label:'mixer', shortLabel:'mixer', note:'stand mixer on low speed until smooth'},
+    hand:{time:'12–15 min', label:'by hand', shortLabel:'by hand', note:'by hand until smooth and it passes the windowpane test — this dough is stiff enough to knead comfortably on a floured bench'}
+  },
+  ny:{
+    mixer:{time:'8 min', label:'mixer', shortLabel:'mixer', note:'stand mixer on medium speed until smooth and elastic'},
+    hand:{time:'15–18 min', label:'by hand', shortLabel:'by hand', note:'by hand — knead firmly on the counter, or use the slap-and-fold technique to build gluten faster'}
+  },
+  focaccia:{
+    mixer:{time:'6 min', label:'mixer', shortLabel:'mixer', note:'stand mixer on low speed until no dry flour remains — this dough is too wet to knead'},
+    hand:{time:'5 min', label:'by hand', shortLabel:'by hand', note:'mixed with a spatula or your hand until no dry flour remains — too wet to knead, so add one extra fold set (4 total instead of 3) to build enough strength'}
+  }
+};
+MIX_INFO.home = MIX_INFO.neo;
+
+const MIX_METHOD_INFO = 'Whether you mix in a stand mixer or by hand changes the technique, not the ingredients. A mixer develops gluten faster and more consistently — useful for stiffer Neapolitan and New York doughs. Very wet doughs like focaccia are too sticky to knead by hand at all, so “by hand” there just means mixing with a spatula and relying more on stretch-and-folds to build strength instead.';
+
+function currentMixInfo(){ return MIX_INFO[style][mixMethod]; }
+function foldCount(){ return (style==='focaccia' && mixMethod==='hand') ? 4 : 3; }
+
+function setMixMethod(m,btn){
+  mixMethod=m;
+  document.querySelectorAll('#mix-btns .fbtn').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  closeAllPopovers();
+  update();
+}
 
 const SETTINGS_PREFIX='epd_settings_';
 
@@ -541,7 +594,7 @@ function loadStyleSettings(s){
 function saveStyleSettings(){
   try{
     const data={
-      flour, fermentHours, ovenType, ovenBrand, traySizeId,
+      flour, fermentHours, ovenType, ovenBrand, traySizeId, mixMethod,
       hydration:document.getElementById('hydration').value,
       balls:document.getElementById('balls').value,
       weight:document.getElementById('weight').value,
@@ -566,6 +619,7 @@ function setStyle(s,btn){
   document.getElementById('oven-row').style.display = s==='home'?'flex':'none';
   document.getElementById('oven-brand-row').style.display = (s==='neo'||s==='ny'||s==='focaccia')?'flex':'none';
   document.getElementById('manitoba').value=0;
+  mixMethod='mixer';
   if(s==='focaccia'){ traySizeId='rect2333'; }
   if(s==='home'){ ovenType='steel'; }
   if(s==='neo'||s==='ny'||s==='focaccia'){ ovenBrand='gozney'; }
@@ -590,12 +644,14 @@ function setStyle(s,btn){
     if(saved.ovenBrand && OVEN_BRANDS.some(o=>o.id===saved.ovenBrand)) ovenBrand=saved.ovenBrand;
     if(saved.traySizeId && TRAY_SIZES.some(t=>t.id===saved.traySizeId)) traySizeId=saved.traySizeId;
     if(saved.fermentHours && YEAST_RATES[saved.fermentHours]) fermentToApply=saved.fermentHours;
+    if(saved.mixMethod && MIX_INFO[s][saved.mixMethod]) mixMethod=saved.mixMethod;
     if(saved.manitoba!=null) document.getElementById('manitoba').value=saved.manitoba;
     if(saved.balls!=null) ballsEl.value=saved.balls;
     if(saved.weight!=null) weightEl.value=saved.weight;
   }
   fermentHours=fermentToApply;
   document.querySelectorAll('#ferment-btns .fbtn').forEach(b=>b.classList.toggle('active', parseInt(b.dataset.hours)===fermentHours));
+  document.querySelectorAll('#mix-btns .fbtn').forEach(b=>b.classList.toggle('active', b.dataset.method===mixMethod));
 
   if(s==='focaccia'){ renderTraySelect(); }
   if(s==='home'){ renderOvenSelect(); }
@@ -709,6 +765,8 @@ function renderPopoverContent(id){
   } else if(id==='oven-brand-popover'){
     const o=currentOvenBrand();
     pop.innerHTML=`<div class="p-title">${o.label}</div><div>${o.info}</div>`;
+  } else if(id==='mix-popover'){
+    pop.innerHTML=`<div class="p-title">Stand mixer or by hand?</div><div>${MIX_METHOD_INFO}</div>`;
   }
 }
 
@@ -802,6 +860,7 @@ function renderRecipe(d){
   const ob=currentOvenBrand();
   const sz=style==='focaccia'?trayLabel():(style==='home'?oven.sizeIn:pizzaSize(weightVal));
   const flourName=FLOURS[style].find(f=>f.id===flour)?.label;
+  const mi=currentMixInfo();
 
   if(style==='neo'){
     grid.innerHTML=`
@@ -823,7 +882,7 @@ function renderRecipe(d){
         <div class="row"><span class="name">Water (into poolish first)</span><span class="amount">${fmt(d.finalWater)}</span></div>
         <div class="row"><span class="name">Salt</span><span class="amount">${fmt(d.salt)}</span></div>
         <div class="timing">
-          <div class="timing-item"><span class="t-val">5 min</span><span class="t-label">mixer</span></div>
+          <div class="timing-item"><span class="t-val">${mi.time}</span><span class="t-label">${mi.shortLabel}</span></div>
           <div class="timing-item"><span class="t-val">30 min</span><span class="t-label">bench rest</span></div>
           <div class="timing-item"><span class="t-val">${fLabel}</span><span class="t-label">cold proof</span></div>
         </div>
@@ -839,7 +898,7 @@ function renderRecipe(d){
           <div class="step"><div class="n">Basil & oil</div><div class="v">after bake</div></div>
         </div>
       </div>
-      <div class="note">Poolish is 50% of total flour at 100% hydration. Yeast calibrated to 0.15g per 175g poolish flour at 72 hr, scaled proportionally for other ferment times. Salt at 2.4% of total flour. No honey — long ferment generates natural sugars. Add day 2 water into poolish first, loosen with hands, then pour into dry flour.</div>`;
+      <div class="note">Poolish is 50% of total flour at 100% hydration. Yeast calibrated to 0.15g per 175g poolish flour at 72 hr, scaled proportionally for other ferment times. Salt at 2.4% of total flour. No honey — long ferment generates natural sugars. Add day 2 water into poolish first, loosen with hands, then pour into dry flour. Mixing ${mi.note}.</div>`;
   } else if(style==='home'){
     grid.innerHTML=`
       <div class="stage">
@@ -860,7 +919,7 @@ function renderRecipe(d){
         <div class="row"><span class="name">Water (into poolish first)</span><span class="amount">${fmt(d.finalWater)}</span></div>
         <div class="row"><span class="name">Salt</span><span class="amount">${fmt(d.salt)}</span></div>
         <div class="timing">
-          <div class="timing-item"><span class="t-val">5 min</span><span class="t-label">mixer</span></div>
+          <div class="timing-item"><span class="t-val">${mi.time}</span><span class="t-label">${mi.shortLabel}</span></div>
           <div class="timing-item"><span class="t-val">30 min</span><span class="t-label">bench rest</span></div>
           <div class="timing-item"><span class="t-val">${fLabel}</span><span class="t-label">cold proof</span></div>
         </div>
@@ -876,7 +935,7 @@ function renderRecipe(d){
           <div class="step"><div class="n">Basil & oil</div><div class="v">after bake</div></div>
         </div>
       </div>
-      <div class="note">${oven.info}${oven.id!=='tray'?' Optional: finish under a hot grill/broiler for 60–90 sec at the end to blister the top and cheese, similar to what a dome would do in a dedicated oven.':''}</div>`;
+      <div class="note">${oven.info}${oven.id!=='tray'?' Optional: finish under a hot grill/broiler for 60–90 sec at the end to blister the top and cheese, similar to what a dome would do in a dedicated oven.':''} Mixing ${mi.note}.</div>`;
   } else if(style==='ny'){
     grid.innerHTML=`
       <div class="stage full">
@@ -889,7 +948,7 @@ function renderRecipe(d){
         <div class="row"><span class="name">Olive oil <span class="diff-tag">NY</span></span><span class="amount">${fmt(d.oil)}</span></div>
         <div class="row"><span class="name">Sugar <span class="diff-tag">NY</span></span><span class="amount">${fmt(d.sugar)}</span></div>
         <div class="timing">
-          <div class="timing-item"><span class="t-val">8 min</span><span class="t-label">mixer</span></div>
+          <div class="timing-item"><span class="t-val">${mi.time}</span><span class="t-label">${mi.shortLabel}</span></div>
           <div class="timing-item"><span class="t-val">30 min</span><span class="t-label">bench rest</span></div>
           <div class="timing-item"><span class="t-val">${fLabel}</span><span class="t-label">cold proof</span></div>
         </div>
@@ -916,7 +975,7 @@ function renderRecipe(d){
           <div class="step"><div class="n">Bake</div><div class="v">2–3 min</div></div>
         </div>
       </div>
-      <div class="note">No poolish for NY style — straight dough, all in one mix. Oil at 2%, sugar at 1% of flour. Use low moisture mozzarella not fresh. NY dough is thicker than Neapolitan, so pull the flame back after preheating and rotate halfway through the longer bake.</div>`;
+      <div class="note">No poolish for NY style — straight dough, all in one mix. Oil at 2%, sugar at 1% of flour. Use low moisture mozzarella not fresh. NY dough is thicker than Neapolitan, so pull the flame back after preheating and rotate halfway through the longer bake. Mixing ${mi.note}.</div>`;
   } else {
     grid.innerHTML=`
       <div class="stage full">
@@ -928,8 +987,8 @@ function renderRecipe(d){
         <div class="row"><span class="name">Fine sea salt</span><span class="amount">${fmt(d.salt)}</span></div>
         <div class="row"><span class="name">Olive oil <span class="diff-tag">focaccia</span></span><span class="amount">${fmt(d.oil)}</span></div>
         <div class="timing">
-          <div class="timing-item"><span class="t-val">6 min</span><span class="t-label">mixer</span></div>
-          <div class="timing-item"><span class="t-val">3× folds</span><span class="t-label">first hour</span></div>
+          <div class="timing-item"><span class="t-val">${mi.time}</span><span class="t-label">${mi.shortLabel}</span></div>
+          <div class="timing-item"><span class="t-val">${foldCount()}× folds</span><span class="t-label">first hour</span></div>
           <div class="timing-item"><span class="t-val">${fLabel}</span><span class="t-label">bulk in fridge</span></div>
         </div>
         <div style="text-align:right;margin-top:6px">
@@ -962,7 +1021,7 @@ function renderRecipe(d){
           <div class="step"><div class="n">Bake</div><div class="v">8–12 min</div></div>
         </div>
       </div>
-      <div class="note">Straight dough, high hydration, sized for one ${sz}. Salt at 2.5% of flour, olive oil in the dough at 5% of flour (extra brine goes on top before baking). These ovens run far hotter than a domestic oven, so turn the flame low or off after preheating and rely on residual heat — keep an eye on the top so it doesn't scorch. Making more than one tray? Just repeat the recipe per tray — hydration and ratios stay the same regardless of size.</div>`;
+      <div class="note">Straight dough, high hydration, sized for one ${sz}. Salt at 2.5% of flour, olive oil in the dough at 5% of flour (extra brine goes on top before baking). These ovens run far hotter than a domestic oven, so turn the flame low or off after preheating and rely on residual heat — keep an eye on the top so it doesn't scorch. Making more than one tray? Just repeat the recipe per tray — hydration and ratios stay the same regardless of size. Mixing ${mi.note}.</div>`;
   }
 }
 
@@ -979,6 +1038,7 @@ function renderTimeline(){
   let daysUntil=(cookDay-today.getDay()+7)%7||7;
   const cookDate=addDays(today,daysUntil);
   const pullHour=ch-3;
+  const mi=currentMixInfo();
   let html='';
 
   if(style==='neo'){
@@ -1009,7 +1069,7 @@ function renderTimeline(){
         </div>
         <div class="event teal">
           <div class="event-time">+1 hr</div>
-          <div class="event-body"><div class="event-title">Mix final dough</div><div class="event-sub">Add water to poolish first · loosen · pour into flour · 5 min mixer</div></div>
+          <div class="event-body"><div class="event-title">Mix final dough</div><div class="event-sub">Add water to poolish first · loosen · pour into flour · ${mi.time} ${mi.shortLabel}</div></div>
         </div>
         <div class="event teal">
           <div class="event-time">+10 min</div>
@@ -1067,7 +1127,7 @@ function renderTimeline(){
         </div>
         <div class="event teal">
           <div class="event-time">+1 hr</div>
-          <div class="event-body"><div class="event-title">Mix final dough</div><div class="event-sub">Add water to poolish first · loosen · pour into flour · 5 min mixer</div></div>
+          <div class="event-body"><div class="event-title">Mix final dough</div><div class="event-sub">Add water to poolish first · loosen · pour into flour · ${mi.time} ${mi.shortLabel}</div></div>
         </div>
         <div class="event teal">
           <div class="event-time">+10 min</div>
@@ -1110,7 +1170,7 @@ function renderTimeline(){
       <div class="events">
         <div class="event red">
           <div class="event-time">Evening</div>
-          <div class="event-body"><div class="event-title">Mix straight dough</div><div class="event-sub">All ingredients in one go · 8 min mixer · 30 min bench rest · ball up · into fridge</div></div>
+          <div class="event-body"><div class="event-title">Mix straight dough</div><div class="event-sub">All ingredients in one go · ${mi.time} ${mi.shortLabel} · 30 min bench rest · ball up · into fridge</div></div>
         </div>
         <div class="proof-bar"><span>Cold proof begins</span><span class="hours">${fermentHours} hr in fridge</span></div>
       </div>
@@ -1145,7 +1205,7 @@ function renderTimeline(){
       <div class="events">
         <div class="event amber">
           <div class="event-time">Evening</div>
-          <div class="event-body"><div class="event-title">Mix straight dough</div><div class="event-sub">6 min mixer · 3 folds over the first hour · into fridge</div></div>
+          <div class="event-body"><div class="event-title">Mix straight dough</div><div class="event-sub">${mi.time} ${mi.shortLabel} · ${foldCount()} folds over the first hour · into fridge</div></div>
         </div>
         <div class="proof-bar"><span>Bulk ferment begins</span><span class="hours">${fermentHours} hr in fridge</span></div>
       </div>
@@ -1202,13 +1262,13 @@ const STYLE_LABELS={neo:'Neapolitan',ny:'New York',focaccia:'Focaccia',home:'Hom
 const STYLE_SUB={neo:'Classic wood-fired style, poolish pre-ferment',ny:'Big, foldable slice, straight dough',focaccia:'Thick, olive-oil rich, baked in a tray',home:'No pizza oven? Steel, stone or a tray all work'};
 
 function computeWizardSteps(){
-  const steps=['style','flour'];
+  const steps=['style','flour','mix'];
   if(style==='home'){ steps.push('oven'); }
   else { steps.push('ovenBrand'); if(style==='focaccia') steps.push('tray'); }
   if(style==='ny'||style==='focaccia') steps.push('blend');
   steps.push('hydration','ferment');
   if(style!=='focaccia') steps.push('amount');
-  steps.push('cook');
+  steps.push('cook','review');
   return steps;
 }
 
@@ -1252,6 +1312,12 @@ function wizardChooseStyle(s){
 
 function wizardSetFlour(f){
   setFlour(f);
+  renderWizardStep();
+}
+
+function wizardSetMixMethod(m){
+  const btn=document.querySelector('#mix-btns .fbtn[data-method="'+m+'"]');
+  setMixMethod(m,btn);
   renderWizardStep();
 }
 
@@ -1327,6 +1393,11 @@ function renderWizardStep(){
     html=`<div class="wizard-step-title">Which flour are you using?</div><div class="wizard-options single-col">`+
       list.map(f=>optCard(f.id===flour,`wizardSetFlour('${f.id}')`,f.label,`Protein ${f.protein}`)).join('')+
       `</div><div class="wizard-info-box">${fd.info}<br><br><b>Hydration:</b> ${hydrationGuidance(fd)}</div>`;
+  } else if(name==='mix'){
+    const mopts=[{id:'mixer',label:'Stand mixer'},{id:'hand',label:'By hand'}];
+    html=`<div class="wizard-step-title">How will you mix the dough?</div><div class="wizard-options single-col">`+
+      mopts.map(m=>optCard(mixMethod===m.id,`wizardSetMixMethod('${m.id}')`,m.label,MIX_INFO[style][m.id].time)).join('')+
+      `</div><div class="wizard-info-box">${MIX_INFO[style][mixMethod].note}</div>`;
   } else if(name==='oven'){
     html=`<div class="wizard-step-title">What are you baking on?</div><div class="wizard-options single-col">`+
       OVEN_TYPES.map(o=>optCard(o.id===ovenType,`wizardSetOvenType('${o.id}')`,o.label,`Preheat ${o.preheatMin} min · ${o.bakeTemp}`)).join('')+
@@ -1374,14 +1445,39 @@ function renderWizardStep(){
         <div><label>Cook time</label><input type="time" id="wizard-cook-time" value="${ct}" onchange="wizardCookChange()"></div>
       </div>
       <div class="wizard-info-box">We'll work backwards from this to schedule everything — mixing, folding, fridge time and preheating.</div>`;
+  } else if(name==='review'){
+    const totalDough=document.getElementById('total-dough').textContent;
+    const totalFlour=document.getElementById('total-flour').textContent;
+    const totalWater=document.getElementById('total-water').textContent;
+    const sizeLabel=document.getElementById('size-label').textContent;
+    const pizzaSize=document.getElementById('pizza-size').textContent;
+    const bakeInfo=document.getElementById('bake-info').textContent;
+    html=`<div class="wizard-step-title">Your bake plan is ready</div>
+      <div class="wizard-summary-bar">
+        <div><span class="label">Total dough</span><span class="big">${totalDough}</span></div>
+        <div><span class="label">Total flour</span><span class="big">${totalFlour}</span></div>
+        <div><span class="label">Total water</span><span class="big">${totalWater}</span></div>
+        <div><span class="label">${sizeLabel}</span><span class="big">${pizzaSize}</span></div>
+        <div><span class="label">Bake</span><span class="big">${bakeInfo}</span></div>
+      </div>
+      <div class="wizard-review-scroll">
+        <div class="recipe-grid">${document.getElementById('recipe-grid').innerHTML}</div>
+        <div class="tl-controls" style="display:none"></div>
+        ${document.getElementById('timeline-content').innerHTML}
+      </div>
+      <div class="wizard-close-note">When you close this window, this exact recipe and timeline will be waiting for you on the main page — nothing to redo.</div>`;
   }
 
+  document.getElementById('wizard-card').classList.toggle('wizard-review', name==='review');
   body.innerHTML=html;
 
   document.getElementById('wizard-progress').innerHTML=wizardSteps.map((s,i)=>
     `<span class="wizard-dot${i===wizardIndex?' active':(i<wizardIndex?' done':'')}"></span>`).join('');
   document.getElementById('wizard-back').style.visibility=wizardIndex===0?'hidden':'visible';
-  document.getElementById('wizard-next').textContent=wizardIndex===wizardSteps.length-1?'Finish':'Next';
+  const isLast=wizardIndex===wizardSteps.length-1;
+  document.getElementById('wizard-next').textContent=isLast?'Close':'Next';
+  const skipEl=document.querySelector('.wizard-skip');
+  if(skipEl) skipEl.style.display=isLast?'none':'inline';
 }
 
 renderFlourSelect();
