@@ -147,9 +147,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   #tab-recipe{display:block !important}
 }
 
-.wizard-launch-bar{padding:0.9rem 1.5rem;background:var(--color-background-secondary);border-bottom:0.5px solid var(--color-border-tertiary);display:flex;justify-content:center}
+.wizard-launch-bar{padding:0.9rem 1.5rem;background:var(--color-background-secondary);border-bottom:0.5px solid var(--color-border-tertiary);display:flex;justify-content:center;gap:0.75rem;flex-wrap:wrap}
 .wizard-launch-btn{font-size:15px;font-weight:700;padding:12px 26px;border-radius:26px;border:2px solid #B3202A;background:#B3202A;color:#fff;cursor:pointer;box-shadow:0 4px 14px rgba(179,32,42,0.35);transition:all .15s}
 .wizard-launch-btn:hover{background:#8f1a22;box-shadow:0 6px 18px rgba(179,32,42,0.45);transform:translateY(-1px)}
+.saved-recipes-btn{font-size:15px;font-weight:700;padding:12px 26px;border-radius:26px;border:2px solid #1a1a1a;background:transparent;color:#1a1a1a;cursor:pointer;transition:all .15s}
+.saved-recipes-btn:hover{background:#1a1a1a;color:#fff}
+@media(prefers-color-scheme:dark){
+  .saved-recipes-btn{border-color:#f5f0e8;color:#f5f0e8}
+  .saved-recipes-btn:hover{background:#f5f0e8;color:#1a1a1a}
+}
 .wizard-overlay{position:fixed;inset:0;background:rgba(20,10,8,0.72);z-index:999;display:flex;align-items:center;justify-content:center;padding:1rem}
 .wizard-card{background:var(--color-background-primary);border-radius:16px;max-width:520px;width:100%;max-height:90vh;overflow-y:auto;padding:1.5rem;box-shadow:0 20px 60px rgba(0,0,0,0.4)}
 .wizard-progress{display:flex;gap:6px;justify-content:center;margin-bottom:1.25rem}
@@ -186,6 +192,22 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .wizard-close-note{padding:0.85rem 1rem;background:#FAEAEA;color:#7C1D1D;border-radius:10px;font-size:13px;line-height:1.5;font-weight:500;text-align:center}
 @media(prefers-color-scheme:dark){.wizard-close-note{background:#4A0D0D;color:#F4AAAA}}
 @media(max-width:480px){.wizard-options{grid-template-columns:1fr}}
+
+.saved-recipes-card{max-width:520px}
+.save-recipe-form{display:flex;gap:0.5rem;margin-bottom:1.25rem}
+.save-recipe-form input{flex:1;padding:10px 12px;border-radius:8px;border:1px solid var(--color-border-secondary);font-size:14px}
+.save-recipe-form button{padding:10px 18px;border-radius:8px;border:none;background:#B3202A;color:#fff;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap}
+.save-recipe-form button:hover{background:#8f1a22}
+.saved-recipes-list{display:flex;flex-direction:column;gap:0.6rem;max-height:44vh;overflow-y:auto}
+.saved-recipe-row{display:flex;align-items:center;justify-content:space-between;gap:0.75rem;padding:0.75rem 0.9rem;border:0.5px solid var(--color-border-tertiary);border-radius:10px;background:var(--color-background-secondary)}
+.saved-recipe-name{font-size:13px;font-weight:600;color:var(--color-text-primary)}
+.saved-recipe-sub{font-size:11px;color:var(--color-text-secondary);margin-top:2px}
+.saved-recipe-actions{display:flex;gap:6px;flex-shrink:0}
+.sr-load-btn,.sr-delete-btn{padding:6px 14px;border-radius:16px;font-size:12px;font-weight:600;cursor:pointer;border:none}
+.sr-load-btn{background:#1a1a1a;color:#f5f0e8}
+.sr-delete-btn{background:transparent;color:#7C1D1D;border:1px solid #d9a3a3}
+.saved-recipe-empty{font-size:13px;color:var(--color-text-secondary);text-align:center;padding:1.5rem 0.5rem;line-height:1.5}
+#saved-recipes-overlay .wizard-nav{justify-content:center}
 </style>
 </head>
 <body>
@@ -199,6 +221,20 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <button id="wizard-back" type="button" onclick="wizardBack()">Back</button>
       <span class="wizard-skip" onclick="closeWizard()">Skip to full page</span>
       <button id="wizard-next" type="button" onclick="wizardNext()">Next</button>
+    </div>
+  </div>
+</div>
+
+<div class="wizard-overlay" id="saved-recipes-overlay" style="display:none">
+  <div class="wizard-card saved-recipes-card">
+    <div class="wizard-step-title">Saved recipes</div>
+    <div class="save-recipe-form">
+      <input type="text" id="save-recipe-name" placeholder="Name this setup (optional)" maxlength="40">
+      <button type="button" onclick="saveCurrentRecipe()">Save current</button>
+    </div>
+    <div class="saved-recipes-list" id="saved-recipes-list"></div>
+    <div class="wizard-nav">
+      <button type="button" onclick="closeSavedRecipes()">Close</button>
     </div>
   </div>
 </div>
@@ -224,6 +260,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
   <div class="wizard-launch-bar">
     <button class="wizard-launch-btn" type="button" onclick="openWizard()">🧭 New here? Try guided setup</button>
+    <button class="saved-recipes-btn" type="button" onclick="openSavedRecipes()">💾 Saved recipes</button>
   </div>
 
   <div class="style-row">
@@ -591,22 +628,107 @@ function loadStyleSettings(s){
   }catch(e){ return null; }
 }
 
+function captureCurrentRecipeState(){
+  return {
+    flour, fermentHours, ovenType, ovenBrand, traySizeId, mixMethod,
+    hydration:document.getElementById('hydration').value,
+    balls:document.getElementById('balls').value,
+    weight:document.getElementById('weight').value,
+    manitoba:document.getElementById('manitoba').value,
+    cookDay:document.getElementById('cook-day').value,
+    cookTime:document.getElementById('cook-time').value
+  };
+}
+
 function saveStyleSettings(){
   try{
-    const data={
-      flour, fermentHours, ovenType, ovenBrand, traySizeId, mixMethod,
-      hydration:document.getElementById('hydration').value,
-      balls:document.getElementById('balls').value,
-      weight:document.getElementById('weight').value,
-      manitoba:document.getElementById('manitoba').value,
-      cookDay:document.getElementById('cook-day').value,
-      cookTime:document.getElementById('cook-time').value
-    };
-    localStorage.setItem(SETTINGS_PREFIX+style, JSON.stringify(data));
+    localStorage.setItem(SETTINGS_PREFIX+style, JSON.stringify(captureCurrentRecipeState()));
   }catch(e){ /* localStorage unavailable — ignore */ }
 }
 
-function setStyle(s,btn){
+/* ---------- Named, explicitly-saved recipes ---------- */
+const SAVED_RECIPES_KEY='epd_saved_recipes';
+
+function getSavedRecipes(){
+  try{ return JSON.parse(localStorage.getItem(SAVED_RECIPES_KEY))||[]; }catch(e){ return []; }
+}
+
+function setSavedRecipesList(list){
+  try{ localStorage.setItem(SAVED_RECIPES_KEY, JSON.stringify(list)); }catch(e){ /* ignore */ }
+}
+
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function openSavedRecipes(){
+  const nameInput=document.getElementById('save-recipe-name');
+  if(nameInput) nameInput.value='';
+  document.getElementById('saved-recipes-overlay').style.display='flex';
+  renderSavedRecipesList();
+}
+
+function closeSavedRecipes(){
+  document.getElementById('saved-recipes-overlay').style.display='none';
+}
+
+function saveCurrentRecipe(){
+  const nameInput=document.getElementById('save-recipe-name');
+  let name=(nameInput.value||'').trim();
+  if(!name){
+    const dateStr=new Date().toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+    name=`${STYLE_LABELS[style]} — ${dateStr}`;
+  }
+  const entry={
+    id:Date.now().toString(36)+Math.random().toString(36).slice(2,7),
+    name, style, savedAt:Date.now(),
+    state:captureCurrentRecipeState()
+  };
+  const list=getSavedRecipes();
+  list.unshift(entry);
+  setSavedRecipesList(list.slice(0,40));
+  nameInput.value='';
+  renderSavedRecipesList();
+}
+
+function renderSavedRecipesList(){
+  const box=document.getElementById('saved-recipes-list');
+  const list=getSavedRecipes();
+  if(!list.length){
+    box.innerHTML='<div class="saved-recipe-empty">No saved recipes yet — set everything up the way you like it, then tap "Save current" above. Saved recipes stay on this device/browser.</div>';
+    return;
+  }
+  box.innerHTML=list.map(r=>{
+    const d=new Date(r.savedAt);
+    const dateStr=d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+    return `<div class="saved-recipe-row">
+      <div class="saved-recipe-info">
+        <div class="saved-recipe-name">${escapeHtml(r.name)}</div>
+        <div class="saved-recipe-sub">${escapeHtml(STYLE_LABELS[r.style]||r.style)} · saved ${dateStr}</div>
+      </div>
+      <div class="saved-recipe-actions">
+        <button type="button" class="sr-load-btn" onclick="loadSavedRecipe('${r.id}')">Load</button>
+        <button type="button" class="sr-delete-btn" onclick="deleteSavedRecipe('${r.id}')">Delete</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function loadSavedRecipe(id){
+  const list=getSavedRecipes();
+  const r=list.find(x=>x.id===id);
+  if(!r) return;
+  const btn=document.querySelector('.style-btn[data-style="'+r.style+'"]');
+  setStyle(r.style, btn, r.state);
+  closeSavedRecipes();
+}
+
+function deleteSavedRecipe(id){
+  setSavedRecipesList(getSavedRecipes().filter(x=>x.id!==id));
+  renderSavedRecipesList();
+}
+
+function setStyle(s,btn,overrideState){
   style=s; flour=FLOURS[s][0].id;
   document.querySelectorAll('.style-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
@@ -635,8 +757,8 @@ function setStyle(s,btn){
   document.getElementById('weight-group').style.display = s==='focaccia'?'none':'block';
   document.getElementById('controls-grid').style.gridTemplateColumns = s==='focaccia'?'1fr':'1fr 1fr 1fr';
 
-  // Recall this style's last saved setup, if any
-  const saved=loadStyleSettings(s);
+  // Recall this style's last saved setup, if any — or an explicit saved-recipe snapshot when given
+  const saved=overrideState||loadStyleSettings(s);
   let fermentToApply=72;
   if(saved){
     if(FLOURS[s].some(f=>f.id===saved.flour)) flour=saved.flour;
@@ -1480,14 +1602,14 @@ function renderWizardStep(){
   if(skipEl) skipEl.style.display=isLast?'none':'inline';
 }
 
-renderFlourSelect();
 renderTraySelect();
 renderOvenSelect();
 renderOvenBrandSelect();
-renderBackground();
-applyFlourConstraints();
 layoutForWidth(wideQuery);
-update();
+// Route the very first render through setStyle so this style's saved
+// setup (flour, hydration, ferment, oven, mix method, cook time...) is
+// restored on load too, not only when the person switches tabs.
+setStyle(style, document.querySelector('.style-btn[data-style="'+style+'"]'));
 </script>
 </body>
 </html>
