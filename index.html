@@ -285,6 +285,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     </div>
   </div>
 
+  <div class="ferment-row" id="detroit-oven-choice-row" style="display:none">
+    <label>Cook in</label>
+    <button class="info-btn" type="button" onclick="togglePop(event,'detroit-oven-choice-popover')">i</button>
+    <div class="popover" id="detroit-oven-choice-popover"></div>
+    <div class="flour-btns" id="detroit-oven-choice-btns">
+      <button class="fbtn active" data-choice="home" onclick="setDetroitOvenChoice('home',this)">Home oven</button>
+      <button class="fbtn" data-choice="outdoor" onclick="setDetroitOvenChoice('outdoor',this)">Pizza oven</button>
+    </div>
+  </div>
+
   <div class="flour-row" id="oven-brand-row">
     <label>Pizza oven</label>
     <div class="flour-select-wrap">
@@ -299,6 +309,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="flour-select-wrap">
       <select id="tray-select" onchange="setTraySize(this.value)"></select>
     </div>
+  </div>
+
+  <div class="flour-row" id="focaccia-custom-row" style="display:none">
+    <label>Tray L×W</label>
+    <div class="pan-size-inputs">
+      <input type="number" id="focaccia-length" min="10" max="70" step="0.5" value="23" onchange="setFocacciaTray()"><span class="pan-x">×</span>
+      <input type="number" id="focaccia-width" min="10" max="70" step="0.5" value="33" onchange="setFocacciaTray()"><span class="pan-unit">cm</span>
+    </div>
+    <button class="info-btn" type="button" onclick="togglePop(event,'focaccia-tray-popover')">i</button>
+    <div class="popover" id="focaccia-tray-popover"></div>
   </div>
 
   <div class="flour-row" id="detroit-pan-row" style="display:none">
@@ -539,6 +559,16 @@ const FRICO_INFO = 'Detroit-style pizza\u2019s signature is the cheese-to-the-ed
 
 const DETROIT_PAN_INFO = 'Detroit pizza is baked in a deep-sided rectangular steel pan \u2014 the height matters as much as the footprint, since the dough needs room to proof upward and the cheese needs a wall to climb and caramelize against. Anything with sides of roughly 5cm (2\u2033) or more works: a proper Detroit pan if you have one, otherwise a rectangular roasting tin, brownie tin or deep metal cake tin of a similar size. Enter your pan\u2019s inside length and width and the dough amount scales to fit the area \u2014 a bigger footprint needs proportionally more dough at the same thickness.';
 
+const DETROIT_HOME_METHOD_INFO = 'In a home oven, run it as hot as it will go (see Oven max above) with a rack positioned low-ish so the pan gets good bottom heat, and preheat properly — a domestic oven needs a genuine 20–30 min to actually reach and stabilize at its top temperature, not just show it on the dial. Bake the pan plain first so the base and sides set and start to crisp against the hot steel, then pull it out, push the cheese right to the edges and add the sauce, and finish baking until the cheese is bubbling and the edges are deeply caramelized. Because a home oven can’t match a dedicated pizza oven’s heat, a short 1–2 min spell under a hot grill/broiler at the very end helps darken and crisp the frico properly.';
+
+const DETROIT_OUTDOOR_METHOD_INFO = 'A Gozney, Ooni or similar outdoor pizza oven runs 400–500°C — far hotter than any thick pan pizza can take at full blast, since the outside would scorch long before the inside cooked through. The trick is to preheat the stone fully as normal, then turn the flame right down or off once it’s up to temperature, so the pan cooks through gently on residual, ambient heat rather than direct flame — much closer to how a home oven behaves, just inside a much hotter box. Check on it rather than trusting a fixed time, since ovens vary: once the base is set and the top is mostly cooked, push the cheese out to the pan edges, add the sauce, then bring the flame back up (or move the pan closer to it) for a short 30–60 second final blast — just enough to caramelize the cheese into a proper frico crust without burning the base.';
+
+const DETROIT_CHEESE_INFO = 'Classic Detroit pizza uses Wisconsin brick cheese, which UK supermarkets simply don’t stock, so the aim is a blend that melts the same way: rich, structured, and able to fry against the hot pan wall without turning greasy. The reliable UK combination is two parts low-moisture block mozzarella (Galbani or Arla block mozzarella — not the fresh ball kind in water, which is too wet) to one part a mild, meltable block cheese for savoury depth and colour: a mild white cheddar (Cathedral City, Pilgrims Choice or Davidstow block cheddar) or Red Leicester both work well and are in every supermarket. If you want to get closer to the American original, Costco stocks Kirkland Signature Monterey Jack in block form, and some larger Tesco or Waitrose “world foods” aisles occasionally carry it too. Whichever you use, cube it by hand rather than buying it pre-shredded — bagged grated cheese is coated in anti-caking starch that stops it fusing properly into the frico, while hand-cut cubes melt together with real structure and hold up against the pan walls.';
+
+const DETROIT_SAUCE_INFO = 'Detroit sauce is a simple, bright tomato sauce striped on top of the cheese after baking (or in the last few minutes) rather than spread underneath the way most pizzas do — that’s what keeps the base from going soggy. Blitz a tin of good whole plum tomatoes — Mutti, Cirio and Napolina are all reliable UK supermarket brands and a fair stand-in for the San Marzano-style tomatoes used in Detroit — with a crushed garlic clove, a good pinch of dried oregano, a small pinch of sugar to round out the acidity, and salt to taste. Simmer it for 10–15 minutes just to thicken slightly; it doesn’t need to cook down for hours like a pasta sauce, and should still taste fresh and a little sharp against the rich, fried cheese edges. Spoon it on in two or three straight stripes rather than spreading it edge to edge, so you get bites of plain cheese crust alongside the sauced middle.';
+
+const FOCACCIA_TRAY_INFO = 'Pick this when your tray or tin doesn’t match one of the preset sizes. Enter its inside length and width in cm and the dough amount scales to fit the area, using the same ratios and roughly the same thickness as the 23×33cm preset — a bigger tray just gets proportionally more dough. Focaccia is forgiving of tray shape (round, square or rectangular all work), so measure the flat inside base rather than the rim.';
+
 const BACKGROUNDS = {
   neo: 'https://images.pexels.com/photos/18677673/pexels-photo-18677673.jpeg?auto=compress&cs=tinysrgb&w=1920',
   ny: 'https://images.pexels.com/photos/32409117/pexels-photo-32409117.jpeg?auto=compress&cs=tinysrgb&w=1920',
@@ -572,9 +602,18 @@ const TRAY_SIZES = [
   {id:'rect2333',label:'23×33cm rectangular tray',doughRec:900},
   {id:'round28', label:'28cm round tin',doughRec:600},
   {id:'half3346',label:'33×46cm half sheet tray',doughRec:1400},
-  {id:'full4666',label:'46×66cm full sheet tray',doughRec:2200}
+  {id:'full4666',label:'46×66cm full sheet tray',doughRec:2200},
+  {id:'custom',  label:'Custom size',doughRec:null}
 ];
 let traySizeId='rect2333';
+
+// Custom focaccia tray, sized by area like the Detroit pan — density calibrated
+// so a 23x33cm tray (759cm²) lands close to the standard 900g preset above.
+let focacciaLength=23, focacciaWidth=33;
+const FOCACCIA_DOUGH_DENSITY=1.15;
+
+function focacciaArea(){ return focacciaLength*focacciaWidth; }
+function focacciaDoughWeight(){ return Math.round(focacciaArea()*FOCACCIA_DOUGH_DENSITY); }
 
 function renderTraySelect(){
   const sel=document.getElementById('tray-select');
@@ -585,14 +624,25 @@ function renderTraySelect(){
     if(t.id===traySizeId) o.selected=true;
     sel.appendChild(o);
   });
+  document.getElementById('focaccia-custom-row').style.display = traySizeId==='custom'?'flex':'none';
 }
 
 function setTraySize(id){
   traySizeId=id;
+  document.getElementById('focaccia-custom-row').style.display = id==='custom'?'flex':'none';
   update();
+  saveStyleSettings();
+}
+
+function setFocacciaTray(){
+  focacciaLength=Math.min(70,Math.max(10,parseFloat(document.getElementById('focaccia-length').value)||23));
+  focacciaWidth =Math.min(70,Math.max(10,parseFloat(document.getElementById('focaccia-width').value)||33));
+  update();
+  saveStyleSettings();
 }
 
 function trayLabel(){
+  if(traySizeId==='custom') return `${focacciaLength}×${focacciaWidth}cm tray`;
   const t=TRAY_SIZES.find(x=>x.id===traySizeId)||TRAY_SIZES[1];
   return t.label;
 }
@@ -602,10 +652,21 @@ function trayLabel(){
 // a commercial 25.4×35.6cm (10×14") pan takes about 888g of dough (~0.95g/cm²).
 let detroitLength=25, detroitWidth=20;
 const DETROIT_DOUGH_DENSITY=0.95;
+let detroitOvenChoice='home';
 
 function detroitArea(){ return detroitLength*detroitWidth; }
 function detroitDoughWeight(){ return Math.round(detroitArea()*DETROIT_DOUGH_DENSITY); }
 function detroitPanLabel(){ return `${detroitLength}×${detroitWidth}cm pan`; }
+
+function setDetroitOvenChoice(c,btn){
+  detroitOvenChoice=c;
+  document.querySelectorAll('#detroit-oven-choice-btns .fbtn').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  document.getElementById('oven-brand-row').style.display = (c==='outdoor')?'flex':'none';
+  if(c==='outdoor'){ renderOvenBrandSelect(); }
+  update();
+  saveStyleSettings();
+}
 
 function setDetroitPan(){
   let l=parseFloat(document.getElementById('detroit-length').value);
@@ -623,6 +684,11 @@ function setDetroitPan(){
 function renderDetroitPanInputs(){
   document.getElementById('detroit-length').value=detroitLength;
   document.getElementById('detroit-width').value=detroitWidth;
+}
+
+function renderFocacciaTrayInputs(){
+  document.getElementById('focaccia-length').value=focacciaLength;
+  document.getElementById('focaccia-width').value=focacciaWidth;
 }
 
 // Yeast rates based on 0.15g per 175g poolish flour at 72hr (original recipe)
@@ -685,7 +751,7 @@ function loadStyleSettings(s){
 
 function captureCurrentRecipeState(){
   return {
-    flour, fermentHours, ovenType, ovenBrand, traySizeId, mixMethod, detroitLength, detroitWidth,
+    flour, fermentHours, ovenType, ovenBrand, traySizeId, mixMethod, detroitLength, detroitWidth, detroitOvenChoice, focacciaLength, focacciaWidth,
     hydration:document.getElementById('hydration').value,
     balls:document.getElementById('balls').value,
     weight:document.getElementById('weight').value,
@@ -793,13 +859,15 @@ function setStyle(s,btn,overrideState){
   document.getElementById('poolish-info-btn').style.display = usesPoolish?'flex':'none';
   document.getElementById('manitoba-row').style.display = (usesPoolish||s==='detroit')?'none':'flex';
   document.getElementById('tray-row').style.display = s==='focaccia'?'flex':'none';
+  document.getElementById('focaccia-custom-row').style.display = 'none';
   document.getElementById('detroit-pan-row').style.display = s==='detroit'?'flex':'none';
+  document.getElementById('detroit-oven-choice-row').style.display = s==='detroit'?'flex':'none';
   document.getElementById('oven-row').style.display = s==='home'?'flex':'none';
-  document.getElementById('oven-brand-row').style.display = (s==='neo'||s==='ny'||s==='focaccia')?'flex':'none';
+  document.getElementById('oven-brand-row').style.display = (s==='neo'||s==='ny'||s==='focaccia'||(s==='detroit'&&detroitOvenChoice==='outdoor'))?'flex':'none';
   document.getElementById('manitoba').value=0;
   mixMethod='mixer';
-  if(s==='focaccia'){ traySizeId='rect2333'; }
-  if(s==='detroit'){ detroitLength=25; detroitWidth=20; }
+  if(s==='focaccia'){ traySizeId='rect2333'; focacciaLength=23; focacciaWidth=33; }
+  if(s==='detroit'){ detroitLength=25; detroitWidth=20; detroitOvenChoice='home'; }
   if(s==='home'){ ovenType='steel'; }
   if(s==='neo'||s==='ny'||s==='focaccia'){ ovenBrand='gozney'; }
 
@@ -824,6 +892,9 @@ function setStyle(s,btn,overrideState){
     if(saved.traySizeId && TRAY_SIZES.some(t=>t.id===saved.traySizeId)) traySizeId=saved.traySizeId;
     if(saved.detroitLength) detroitLength=Math.min(45,Math.max(15,saved.detroitLength));
     if(saved.detroitWidth) detroitWidth=Math.min(45,Math.max(15,saved.detroitWidth));
+    if(saved.detroitOvenChoice==='outdoor'||saved.detroitOvenChoice==='home') detroitOvenChoice=saved.detroitOvenChoice;
+    if(saved.focacciaLength) focacciaLength=Math.min(70,Math.max(10,saved.focacciaLength));
+    if(saved.focacciaWidth) focacciaWidth=Math.min(70,Math.max(10,saved.focacciaWidth));
     if(saved.fermentHours && YEAST_RATES[saved.fermentHours]) fermentToApply=saved.fermentHours;
     if(saved.mixMethod && MIX_INFO[s][saved.mixMethod]) mixMethod=saved.mixMethod;
     if(saved.manitoba!=null) document.getElementById('manitoba').value=saved.manitoba;
@@ -833,11 +904,13 @@ function setStyle(s,btn,overrideState){
   fermentHours=fermentToApply;
   document.querySelectorAll('#ferment-btns .fbtn').forEach(b=>b.classList.toggle('active', parseInt(b.dataset.hours)===fermentHours));
   document.querySelectorAll('#mix-btns .fbtn').forEach(b=>b.classList.toggle('active', b.dataset.method===mixMethod));
+  document.querySelectorAll('#detroit-oven-choice-btns .fbtn').forEach(b=>b.classList.toggle('active', b.dataset.choice===detroitOvenChoice));
+  document.getElementById('oven-brand-row').style.display = (s==='neo'||s==='ny'||s==='focaccia'||(s==='detroit'&&detroitOvenChoice==='outdoor'))?'flex':'none';
 
-  if(s==='focaccia'){ renderTraySelect(); }
+  if(s==='focaccia'){ renderTraySelect(); renderFocacciaTrayInputs(); }
   if(s==='detroit'){ renderDetroitPanInputs(); }
   if(s==='home'){ renderOvenSelect(); }
-  if(s==='neo'||s==='ny'||s==='focaccia'){ renderOvenBrandSelect(); }
+  if(s==='neo'||s==='ny'||s==='focaccia'||(s==='detroit'&&detroitOvenChoice==='outdoor')){ renderOvenBrandSelect(); }
 
   closeAllPopovers();
   renderFlourSelect();
@@ -915,6 +988,12 @@ function renderInfoPanel(){
     html+=`<div class="info-block"><div class="info-block-title">${o.label}</div><div>${o.info}</div></div>`;
   } else if(style==='detroit'){
     html+=`<div class="info-block"><div class="info-block-title">${detroitPanLabel()}</div><div>${DETROIT_PAN_INFO}</div></div>`;
+    if(detroitOvenChoice==='outdoor'){
+      const ob=currentOvenBrand();
+      html+=`<div class="info-block"><div class="info-block-title">${ob.label} — flame off to cook through</div><div>${DETROIT_OUTDOOR_METHOD_INFO}</div></div>`;
+    } else {
+      html+=`<div class="info-block"><div class="info-block-title">Home oven method</div><div>${DETROIT_HOME_METHOD_INFO}</div></div>`;
+    }
   } else {
     const ob=currentOvenBrand();
     html+=`<div class="info-block"><div class="info-block-title">${ob.label}</div><div>${ob.info}</div></div>`;
@@ -924,6 +1003,8 @@ function renderInfoPanel(){
     html+=`<div class="info-block"><div class="info-block-title">What is poolish?</div><div>${POOLISH_INFO}</div></div>`;
   } else if(style==='detroit'){
     html+=`<div class="info-block"><div class="info-block-title">Cheese to the edge — the "frico"</div><div>${FRICO_INFO}</div></div>`;
+    html+=`<div class="info-block"><div class="info-block-title">Which cheese? (UK brands)</div><div>${DETROIT_CHEESE_INFO}</div></div>`;
+    html+=`<div class="info-block"><div class="info-block-title">Which sauce?</div><div>${DETROIT_SAUCE_INFO}</div></div>`;
   }
 
   document.getElementById('info-panel-content').innerHTML=html;
@@ -950,13 +1031,25 @@ function renderPopoverContent(id){
     pop.innerHTML=`<div class="p-title">${o.label}</div><div>${o.info}</div>`;
   } else if(id==='oven-brand-popover'){
     const o=currentOvenBrand();
-    pop.innerHTML=`<div class="p-title">${o.label}</div><div>${o.info}</div>`;
+    if(style==='detroit'){
+      pop.innerHTML=`<div class="p-title">${o.label} — flame off to cook through</div><div>${DETROIT_OUTDOOR_METHOD_INFO}</div>`;
+    } else {
+      pop.innerHTML=`<div class="p-title">${o.label}</div><div>${o.info}</div>`;
+    }
   } else if(id==='mix-popover'){
     pop.innerHTML=`<div class="p-title">Stand mixer or by hand?</div><div>${MIX_METHOD_INFO}</div>`;
   } else if(id==='detroit-pan-popover'){
     pop.innerHTML=`<div class="p-title">Pan size</div><div>${DETROIT_PAN_INFO}</div>`;
   } else if(id==='frico-popover'){
     pop.innerHTML=`<div class="p-title">Cheese to the edge — the "frico"</div><div>${FRICO_INFO}</div>`;
+  } else if(id==='detroit-oven-choice-popover'){
+    pop.innerHTML=`<div class="p-title">Home oven or pizza oven?</div><div>${detroitOvenChoice==='outdoor'?DETROIT_OUTDOOR_METHOD_INFO:DETROIT_HOME_METHOD_INFO}</div>`;
+  } else if(id==='detroit-cheese-popover'){
+    pop.innerHTML=`<div class="p-title">Which cheese? (UK brands)</div><div>${DETROIT_CHEESE_INFO}</div>`;
+  } else if(id==='detroit-sauce-popover'){
+    pop.innerHTML=`<div class="p-title">Which sauce?</div><div>${DETROIT_SAUCE_INFO}</div>`;
+  } else if(id==='focaccia-tray-popover'){
+    pop.innerHTML=`<div class="p-title">Custom tray size</div><div>${FOCACCIA_TRAY_INFO}</div>`;
   }
 }
 
@@ -1001,7 +1094,7 @@ function calcDough(){
   const balls    =parseInt(document.getElementById('balls').value);
   const weight   =parseInt(document.getElementById('weight').value);
   const hydration=parseInt(document.getElementById('hydration').value)/100;
-  const totalDough=style==='focaccia'?(TRAY_SIZES.find(t=>t.id===traySizeId)?.doughRec||900):(style==='detroit'?detroitDoughWeight():balls*weight);
+  const totalDough=style==='focaccia'?(traySizeId==='custom'?focacciaDoughWeight():(TRAY_SIZES.find(t=>t.id===traySizeId)?.doughRec||900)):(style==='detroit'?detroitDoughWeight():balls*weight);
 
   if(style==='neo'||style==='home'){
     const totalFlour  =totalDough/(1+hydration+0.024);
@@ -1029,7 +1122,9 @@ function calcDough(){
     const area =detroitArea();
     const panButter=area*0.0155;
     const panOil   =area*0.0144;
-    return{totalDough,totalFlour,totalWater,salt,yeast,panButter,panOil,area};
+    const cheese   =area*0.9;
+    const sauce    =area*0.34;
+    return{totalDough,totalFlour,totalWater,salt,yeast,panButter,panOil,area,cheese,sauce};
   } else {
     const totalFlour=totalDough/(1+hydration+0.025+0.05);
     const totalWater=totalFlour*hydration;
@@ -1246,12 +1341,25 @@ function renderRecipe(d){
         </div>
       </div>
       <div class="stage full">
-        <span class="badge badge-blue">Bake day — two-phase bake</span>
+        <span class="badge badge-teal">Toppings — cheese &amp; sauce</span>
+        <div class="row"><span class="name">Cheese (cubed, edge to edge)</span><span class="amount">${fmt(d.cheese)}</span></div>
+        <div class="row"><span class="name">Tomato sauce (striped on top)</span><span class="amount">${fmt(d.sauce)}</span></div>
+        <div style="text-align:right;margin-top:6px">
+          <button class="info-btn" type="button" onclick="togglePop(event,'detroit-cheese-popover')" style="display:inline-flex;vertical-align:middle">i</button>
+          <span style="font-size:11px;color:var(--color-text-secondary)">Which cheese?</span>
+          <div class="popover" id="detroit-cheese-popover" style="left:auto;right:0"></div>
+          <button class="info-btn" type="button" onclick="togglePop(event,'detroit-sauce-popover')" style="display:inline-flex;vertical-align:middle;margin-left:8px">i</button>
+          <span style="font-size:11px;color:var(--color-text-secondary)">Which sauce?</span>
+          <div class="popover" id="detroit-sauce-popover" style="left:auto;right:0"></div>
+        </div>
+      </div>
+      <div class="stage full">
+        <span class="badge badge-blue">Bake day — two-phase bake${detroitOvenChoice==='outdoor'?` — ${ob.label}`:''}</span>
         <div class="steps-grid">
           <div class="step"><div class="n">Press to edges</div><div class="v">dimple, don't stretch thin</div></div>
-          <div class="step"><div class="n">Oven temp</div><div class="v">Oven max — 250°C (Gas 9)</div></div>
-          <div class="step"><div class="n">Pre-bake</div><div class="v">5–6 min, no toppings</div></div>
-          <div class="step"><div class="n">Cheese to edges + bake</div><div class="v">10–12 min, then grill 1–2 min</div></div>
+          <div class="step"><div class="n">Oven temp</div><div class="v">${detroitOvenChoice==='outdoor'?`Preheat to ${ob.tempRange}, then flame off/low`:'Oven max — 250°C (Gas 9)'}</div></div>
+          <div class="step"><div class="n">Pre-bake</div><div class="v">${detroitOvenChoice==='outdoor'?'4–5 min, no toppings, on residual heat':'5–6 min, no toppings'}</div></div>
+          <div class="step"><div class="n">Cheese to edges + bake</div><div class="v">${detroitOvenChoice==='outdoor'?'8–10 min on low heat, then flame up 30–60 sec':'10–12 min, then grill 1–2 min'}</div></div>
         </div>
         <div style="text-align:right;margin-top:6px">
           <button class="info-btn" type="button" onclick="togglePop(event,'frico-popover')" style="display:inline-flex;vertical-align:middle">i</button>
@@ -1259,7 +1367,7 @@ function renderRecipe(d){
           <div class="popover" id="frico-popover" style="left:auto;right:0"></div>
         </div>
       </div>
-      <div class="note">Sized for a ${sz} pan (we assume sides at least 5cm/2″ deep — a shallower tray won't hold this much dough as it proofs). Push the dough out to the pan edges rather than stretching it thin, then pile cheese right to the walls so it caramelizes into the "frico" crust. Sauce goes on top of the cheese in two or three stripes, added either before the final few minutes or straight after baking — not underneath — which is what keeps the base crisp. Most UK domestic ovens top out around 250°C (Gas Mark 9, a little higher — 270°C — on some), well short of the 430°C+ a Gozney or Ooni runs at, so once the main bake is done finish the pizza for 1–2 min under a hot grill/broiler to properly darken and crisp the cheese edges the way a dedicated pizza oven would in seconds. Salt at 2% of flour; no oil in the dough itself, it's all in the pan instead. Mixing ${mi.note}.</div>`;
+      <div class="note">Sized for a ${sz} pan (we assume sides at least 5cm/2″ deep — a shallower tray won't hold this much dough as it proofs). Push the dough out to the pan edges rather than stretching it thin, then pile cheese right to the walls so it caramelizes into the "frico" crust. Sauce goes on top of the cheese in two or three stripes, added either before the final few minutes or straight after baking — not underneath — which is what keeps the base crisp. ${detroitOvenChoice==='outdoor'?`Your ${ob.label} runs ${ob.tempRange} — far too hot for a thick pan pizza at full blast — so once the stone's up to temperature turn the flame right down or off and let the pan cook through gently on residual heat, checking rather than trusting the clock. Once the base is set, push the cheese to the edges, then bring the flame back up for a final 30–60 sec to caramelize it into the frico.`:'Most UK domestic ovens top out around 250°C (Gas Mark 9, a little higher — 270°C — on some), well short of the 430°C+ a Gozney or Ooni runs at, so once the main bake is done finish the pizza for 1–2 min under a hot grill/broiler to properly darken and crisp the cheese edges the way a dedicated pizza oven would in seconds.'} Salt at 2% of flour; no oil in the dough itself, it's all in the pan instead. Mixing ${mi.note}.</div>`;
   }
 }
 
@@ -1469,7 +1577,9 @@ function renderTimeline(){
     const mixDaysBack=Math.round(fermentHours/24);
     const mixDate=addDays(cookDate,-mixDaysBack);
     const panHour=ch-3;
-    const preheatDet=subtractMinutes(ch,cm,20);
+    const isOutdoor=detroitOvenChoice==='outdoor';
+    const ob=currentOvenBrand();
+    const preheatDet=subtractMinutes(ch,cm,isOutdoor?ob.preheatMin:20);
 
     html+=`
     <div class="day-block">
@@ -1491,19 +1601,23 @@ function renderTimeline(){
         </div>
         <div class="event teal">
           <div class="event-time">${fmt12(preheatDet.h,preheatDet.m)}</div>
-          <div class="event-body"><div class="event-title">Preheat oven</div><div class="event-sub">Oven max — 250°C (Gas 9) · about 20 min to fully heat</div></div>
+          <div class="event-body"><div class="event-title">Preheat ${isOutdoor?ob.label:'oven'}</div><div class="event-sub">${isOutdoor?`Full heat, ${ob.tempRange} · about ${ob.preheatMin} min to get the stone up to temp`:'Oven max — 250°C (Gas 9) · about 20 min to fully heat'}</div></div>
         </div>
-        <div class="event fire">
+        ${isOutdoor?`<div class="event teal">
           <div class="event-time">${fmt12(ch,cm)}</div>
-          <div class="event-body"><div class="event-title">Pre-bake</div><div class="event-sub">5–6 min with no toppings, until just set</div></div>
+          <div class="event-body"><div class="event-title">Flame off / down low</div><div class="event-sub">Once the stone's up to temp, kill or drop the flame — full blast would scorch the outside before the inside cooks</div></div>
+        </div>`:''}
+        <div class="event fire">
+          <div class="event-time">${isOutdoor?'+1 min':fmt12(ch,cm)}</div>
+          <div class="event-body"><div class="event-title">Pre-bake</div><div class="event-sub">${isOutdoor?'4–5 min with no toppings, on residual heat, until just set':'5–6 min with no toppings, until just set'}</div></div>
         </div>
         <div class="event fire">
-          <div class="event-time">+6 min</div>
-          <div class="event-body"><div class="event-title">Cheese to the edges, sauce on top, bake</div><div class="event-sub">Cheese piled thick against the pan walls · sauce stripes on top · 10–12 min until deep amber at the edges</div></div>
+          <div class="event-time">${isOutdoor?'+6 min':'+6 min'}</div>
+          <div class="event-body"><div class="event-title">Cheese to the edges, sauce on top, bake</div><div class="event-sub">${isOutdoor?'Cheese piled thick against the pan walls · sauce stripes on top · 8–10 min on low/no flame, checking rather than trusting the clock':'Cheese piled thick against the pan walls · sauce stripes on top · 10–12 min until deep amber at the edges'}</div></div>
         </div>
         <div class="event fire">
-          <div class="event-time">+16 min</div>
-          <div class="event-body"><div class="event-title">Grill/broiler finish</div><div class="event-sub">1–2 min under a hot grill to darken the cheese edges — your oven can't match a pizza oven's heat, this closes the gap</div></div>
+          <div class="event-time">${isOutdoor?'+15 min':'+16 min'}</div>
+          <div class="event-body"><div class="event-title">${isOutdoor?'Flame back up to crisp the frico':'Grill/broiler finish'}</div><div class="event-sub">${isOutdoor?'30–60 sec with the flame back up (or pan moved closer to it) to caramelize the cheese edges into the frico':"1–2 min under a hot grill to darken the cheese edges — your oven can't match a pizza oven's heat, this closes the gap"}</div></div>
         </div>
       </div>
     </div>`;
@@ -1526,7 +1640,7 @@ function update(){
   document.getElementById('total-water').textContent=Math.round(d.totalWater)+'g';
   document.getElementById('size-label').textContent =style==='focaccia'?'Tray size':(style==='detroit'?'Pan size':'Pizza size');
   document.getElementById('pizza-size').textContent =style==='focaccia'?trayLabel():(style==='detroit'?detroitPanLabel():(style==='home'?currentOven().sizeIn:pizzaSize(weight)));
-  document.getElementById('bake-info').textContent  =style==='neo'?currentOvenBrand().bakeTime:(style==='ny'?'2–3 min':(style==='home'?currentOven().bakeTime:(style==='detroit'?'17–20 min total':'8–12 min')));
+  document.getElementById('bake-info').textContent  =style==='neo'?currentOvenBrand().bakeTime:(style==='ny'?'2–3 min':(style==='home'?currentOven().bakeTime:(style==='detroit'?(detroitOvenChoice==='outdoor'?'13–16 min total':'17–20 min total'):'8–12 min')));
   if(document.getElementById('flour-popover').classList.contains('open')) renderPopoverContent('flour-popover');
   renderInfoPanel();
   renderRecipe(d);
@@ -1544,7 +1658,7 @@ const STYLE_SUB={neo:'Classic wood-fired style, poolish pre-ferment',ny:'Big, fo
 function computeWizardSteps(){
   const steps=['style','flour','mix'];
   if(style==='home'){ steps.push('oven'); }
-  else if(style==='detroit'){ steps.push('pan'); }
+  else if(style==='detroit'){ steps.push('pan','detroitOven'); if(detroitOvenChoice==='outdoor') steps.push('ovenBrand'); }
   else { steps.push('ovenBrand'); if(style==='focaccia') steps.push('tray'); }
   if(style==='ny'||style==='focaccia') steps.push('blend');
   steps.push('hydration','ferment');
@@ -1617,11 +1731,25 @@ function wizardSetTray(id){
   renderWizardStep();
 }
 
+function wizardSetDetroitOvenChoice(c){
+  const btn=document.querySelector('#detroit-oven-choice-btns .fbtn[data-choice="'+c+'"]');
+  setDetroitOvenChoice(c,btn);
+  wizardSteps=computeWizardSteps();
+  renderWizardStep();
+}
+
 function wizardDetroitPanInput(){
   document.getElementById('detroit-length').value=document.getElementById('wizard-detroit-length').value;
   document.getElementById('detroit-width').value=document.getElementById('wizard-detroit-width').value;
   setDetroitPan();
   document.getElementById('wizard-pan-dough-val').textContent=fmt(detroitDoughWeight());
+}
+
+function wizardFocacciaTrayInput(){
+  document.getElementById('focaccia-length').value=document.getElementById('wizard-focaccia-length').value;
+  document.getElementById('focaccia-width').value=document.getElementById('wizard-focaccia-width').value;
+  setFocacciaTray();
+  document.getElementById('wizard-tray-dough-val').textContent=fmt(focacciaDoughWeight());
 }
 
 function wizardSetFerment(hrs){
@@ -1696,8 +1824,21 @@ function renderWizardStep(){
       `</div><div class="wizard-info-box">${currentOvenBrand().info}</div>`;
   } else if(name==='tray'){
     html=`<div class="wizard-step-title">What tray are you using?</div><div class="wizard-options single-col">`+
-      TRAY_SIZES.map(t=>optCard(t.id===traySizeId,`wizardSetTray('${t.id}')`,t.label,`~${t.doughRec}g dough`)).join('')+
+      TRAY_SIZES.map(t=>optCard(t.id===traySizeId,`wizardSetTray('${t.id}')`,t.label,t.doughRec?`~${t.doughRec}g dough`:'Enter your own size')).join('')+
       `</div>`;
+    if(traySizeId==='custom'){
+      html+=`<div class="wizard-field-row">
+        <div><label>Length (cm)</label><input type="number" id="wizard-focaccia-length" min="10" max="70" step="0.5" value="${focacciaLength}" onchange="wizardFocacciaTrayInput()"></div>
+        <div><label>Width (cm)</label><input type="number" id="wizard-focaccia-width" min="10" max="70" step="0.5" value="${focacciaWidth}" onchange="wizardFocacciaTrayInput()"></div>
+      </div>
+      <div class="wizard-slider-val">~<span id="wizard-tray-dough-val">${fmt(focacciaDoughWeight())}</span> dough</div>
+      <div class="wizard-info-box">${FOCACCIA_TRAY_INFO}</div>`;
+    }
+  } else if(name==='detroitOven'){
+    const dopts=[{id:'home',label:'Home oven'},{id:'outdoor',label:'Pizza oven (Gozney, Ooni, etc)'}];
+    html=`<div class="wizard-step-title">Cooking in a home oven or a pizza oven?</div><div class="wizard-options single-col">`+
+      dopts.map(o=>optCard(detroitOvenChoice===o.id,`wizardSetDetroitOvenChoice('${o.id}')`,o.label,o.id==='outdoor'?'Preheat, then flame off to cook through':'Bake plain, then cheese to the edges')).join('')+
+      `</div><div class="wizard-info-box">${detroitOvenChoice==='outdoor'?DETROIT_OUTDOOR_METHOD_INFO:DETROIT_HOME_METHOD_INFO}</div>`;
   } else if(name==='pan'){
     html=`<div class="wizard-step-title">What size is your pan?</div>
       <div class="wizard-field-row">
